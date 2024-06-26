@@ -62,10 +62,10 @@ public class MovieService {
         movie.setTitle(request.getTitle());
         movie.setYear(request.getYear());
         movie.setDuration(request.getDuration());
-        movie.setCast(getPersonsByIds(request.getCastIds()));
-        movie.setDirectors(getPersonsByIds(request.getDirectorIds()));
-        movie.setScreenwriters(getPersonsByIds(request.getScreenwriterIds()));
-        movie.setProducers(getCompaniesByIds(request.getProducerIds()));
+        movie.setCast(getPersonsByIds(Optional.ofNullable(request.getCastIds()).orElse(List.of())));
+        movie.setDirectors(getPersonsByIds(Optional.ofNullable(request.getDirectorIds()).orElse(List.of())));
+        movie.setScreenwriters(getPersonsByIds(Optional.ofNullable(request.getScreenwriterIds()).orElse(List.of())));
+        movie.setProducers(getCompaniesByIds(Optional.ofNullable(request.getProducerIds()).orElse(List.of())));
         movie.setDistributor(getCompanyById(request.getDistributorId()));
         return movie;
     }
