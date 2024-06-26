@@ -80,10 +80,10 @@ public class UserController {
         return ResponseEntity.ok(user.registerAdmin(registerUser));
     }
 
-    @PatchMapping("/{id}/avatar")
-    public User uploadAvatar(@RequestParam("avatar") MultipartFile file, @PathVariable Long id) {
+    @PatchMapping("avatar")
+    public User uploadAvatar(@RequestParam("avatar") MultipartFile file) {
         try {
-            return user.saveAvatar(id, file);
+            return user.saveAvatar(file);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

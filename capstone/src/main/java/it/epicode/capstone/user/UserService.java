@@ -194,7 +194,8 @@ public class UserService {
     }
 
 
-    public User saveAvatar(long id, MultipartFile file) throws IOException {
+    public User saveAvatar(MultipartFile file) throws IOException {
+        var id = this.getCurrentUserId();
         var user = usersRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
         Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
         var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
