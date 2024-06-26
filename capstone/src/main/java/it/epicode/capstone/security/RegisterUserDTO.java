@@ -9,10 +9,10 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder(setterPrefix = "with")
 public class RegisterUserDTO {
-    String firstName;
-    String lastName;
-    String username;
-    String email;
-    String password;
-    String avatar;
+   private String firstName;
+   private String lastName;
+   private String username;
+   private String email;
+   private String password;
+   private String avatar;
 }

@@ -1,4 +1,4 @@
-package it.epicode.capstone.security.exceptions;
+package it.epicode.capstone.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.ObjectError;

@@ -1,4 +1,4 @@
-package it.epicode.capstone.security.exceptions;
+package it.epicode.capstone.exceptions;
 
 
 public class FileSizeExceededException extends RuntimeException {

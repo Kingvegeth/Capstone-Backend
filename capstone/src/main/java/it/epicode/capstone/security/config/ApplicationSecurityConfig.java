@@ -62,6 +62,7 @@ public class ApplicationSecurityConfig {
                                         .requestMatchers("/api/users/login").permitAll()
                                         .requestMatchers("/api/users/register").permitAll()
                                         .requestMatchers("/api/users/registerAdmin").permitAll() // DA CANCELLARE DOPO AVER CREATO L'ADMIN
+                                        .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
                                         .requestMatchers(HttpMethod.POST, "api/users").permitAll() //ENDPOINT DI REGISTRAZIONE APERTO A TUTTI
                                         .requestMatchers(HttpMethod.GET, "/**").authenticated() //TUTTE GLI ENDPOINTS DI TIPO GET SONO RICHIAMABILI SOLO SE L'UTENTE E AUTENTICATO
                                         .requestMatchers(HttpMethod.POST, "/**").hasAuthority("ADMIN") //TUTTE LE POST POSSONO ESSERE FATTE SOLO DALL'ADMIN

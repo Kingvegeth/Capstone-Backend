@@ -4,13 +4,14 @@ package it.epicode.capstone.user;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import it.epicode.capstone.email.EmailService;
+import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.security.*;
-import it.epicode.capstone.security.exceptions.FileSizeExceededException;
-import it.epicode.capstone.security.exceptions.InvalidLoginException;
+
+import it.epicode.capstone.exceptions.InvalidLoginException;
 import it.epicode.capstone.security.roles.Roles;
 import it.epicode.capstone.security.roles.RolesRepository;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -23,12 +24,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
+
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -43,14 +44,16 @@ public class UserService {
     private final RolesRepository rolesRepository;
     private final AuthenticationManager auth;
     private final JwtUtils jwt;
-    private final EmailService emailService; // per gestire invio email di benvenuto
-    private final Cloudinary cloudinary; // gestisce cloudinary
+    private final EmailService emailService;
 
     @Value("${spring.servlet.multipart.max-file-size}")
     private String maxFileSize;
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Value("${CLOUDINARY_URL}")
+    private String cloudinaryUrl;
 
 
 //    public Optional<LoginResponseDTO> login(String username, String password) {
@@ -194,75 +197,7 @@ public class UserService {
         return usersRepository.findById(id).map(this::convertToResponse);
     }
 
-    @Transactional
-    public String uploadAvatar(Long id, MultipartFile image) throws IOException {
-        long maxFileSize = getMaxFileSizeInBytes();
-        if (image.getSize() > maxFileSize) {
-            throw new FileSizeExceededException("File size exceeds the maximum allowed size");
-        }
 
-        Optional<User> optionalUser = usersRepository.findById(id);
-        User user = optionalUser.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-
-        String existingPublicId = user.getAvatar();
-        if (existingPublicId != null && !existingPublicId.isEmpty()) {
-            cloudinary.uploader().destroy(existingPublicId, ObjectUtils.emptyMap());
-        }
-
-        Map<String, Object> uploadResult = cloudinary.uploader().upload(image.getBytes(), ObjectUtils.emptyMap());
-        String publicId = (String) uploadResult.get("public_id");
-        String url = (String) uploadResult.get("url");
-
-        user.setAvatar(publicId);
-        usersRepository.save(user);
-
-        return url;
-    }
-
-
-// DELETE delete cloudinary file
-
-    @Transactional
-    public String deleteAvatar(Long id) throws IOException {
-        Optional<User> optionalUser = usersRepository.findById(id);
-        User user = optionalUser.orElseThrow(() -> new EntityNotFoundException("User not found with id: " + id));
-
-        String publicId = user.getAvatar();
-        if (publicId != null && !publicId.isEmpty()) {
-            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
-            user.setAvatar(null);
-            usersRepository.save(user);
-            return "Avatar deleted successfully";
-        } else {
-            return "No avatar found for deletion";
-        }
-    }
-
-
-    // PUT update cloudinary file
-    @Transactional
-    public String updateAvatar(Long id, MultipartFile updatedImage) throws IOException {
-        deleteAvatar(id);
-        return uploadAvatar(id, updatedImage);
-    }
-
-    public long getMaxFileSizeInBytes() {
-        String[] parts = maxFileSize.split("(?i)(?<=[0-9])(?=[a-z])");
-        long size = Long.parseLong(parts[0]);
-        String unit = parts[1].toUpperCase();
-        switch (unit) {
-            case "KB":
-                size *= 1024;
-                break;
-            case "MB":
-                size *= 1024 * 1024;
-                break;
-            case "GB":
-                size *= 1024 * 1024 * 1024;
-                break;
-        }
-        return size;
-    }
 
     private RegisteredUserDTO convertToResponse(User user) {
         RegisteredUserDTO dto = RegisteredUserDTO.builder()
@@ -287,7 +222,15 @@ public class UserService {
 
         return userDto;
 
+    }
 
+
+    public User saveAvatar(long id, MultipartFile file) throws IOException {
+        var user = usersRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
+        Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
+        var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+        user.setAvatar(url);
+        return usersRepository.save(user);
     }
 }
 

@@ -10,11 +10,11 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class RegisteredUserDTO {
-    Long id;
-    String firstName;
-    String lastName;
-    String username;
-    String email;
+    private Long id;
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String email;
     private List<Roles> roles;
 
     @Builder(setterPrefix = "with")
