@@ -56,43 +56,6 @@ public class UserService {
     private String cloudinaryUrl;
 
 
-//    public Optional<LoginResponseDTO> login(String username, String password) {
-//        try {
-//            //SI EFFETTUA IL LOGIN
-//            //SI CREA UNA AUTENTICAZIONE OVVERO L'OGGETTO DI TIPO AUTHENTICATION
-//            var a = auth.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-//
-//            a.getAuthorities(); //SERVE A RECUPERARE I RUOLI/IL RUOLO
-//
-//            //SI CREA UN CONTESTO DI SICUREZZA CHE SARA UTILIZZATO IN PIU OCCASIONI
-//            SecurityContextHolder.getContext().setAuthentication(a);
-//
-//            var user = usersRepository.findOneByUsername(username).orElseThrow();
-//            var dto = LoginResponseDTO.builder()
-//                    .withUser(RegisteredUserDTO.builder()
-//                            .withId(user.getId())
-//                            .withFirstName(user.getFirstName())
-//                            .withLastName(user.getLastName())
-//                            .withEmail(user.getEmail())
-//                            .withRoles(user.getRoles())
-//                            .withUsername(user.getUsername())
-//                            .build())
-//                    .build();
-//
-//            //UTILIZZO DI JWTUTILS PER GENERARE IL TOKEN UTILIZZANDO UNA AUTHENTICATION E LO ASSEGNA ALLA LOGINRESPONSEDTO
-//            dto.setToken(jwt.generateToken(a));
-//
-//            return Optional.of(dto);
-//        } catch (NoSuchElementException e) {
-//            //ECCEZIONE LANCIATA SE LO USERNAME E SBAGLIATO E QUINDI L'UTENTE NON VIENE TROVATO
-//            log.error("User not found", e);
-//            throw new InvalidLoginException(username, password);
-//        } catch (AuthenticationException e) {
-//            //ECCEZIONE LANCIATA SE LA PASSWORD E SBAGLIATA
-//            log.error("Authentication failed", e);
-//            throw new InvalidLoginException(username, password);
-//        }
-//    }
 
 
     public Optional<LoginResponseDTO> login(String username, String password) {
@@ -197,6 +160,14 @@ public class UserService {
         return usersRepository.findById(id).map(this::convertToResponse);
     }
 
+    public Long getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof SecurityUserDetails) {
+            SecurityUserDetails userDetails = (SecurityUserDetails) authentication.getPrincipal();
+            return userDetails.getUserId();
+        }
+        throw new IllegalStateException("Utente non autenticato");
+    }
 
 
     private RegisteredUserDTO convertToResponse(User user) {

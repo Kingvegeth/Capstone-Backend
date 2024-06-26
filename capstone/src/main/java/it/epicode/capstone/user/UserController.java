@@ -41,6 +41,15 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
+
+    @GetMapping("me")
+    public ResponseEntity<RegisteredUserDTO> getCurrentUser() {
+        Optional<RegisteredUserDTO> userDTO = user.getUserById(user.getCurrentUserId());
+        return userDTO.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+    }
+
+
     @PostMapping("register")
     public ResponseEntity<RegisteredUserDTO> register(@RequestBody @Validated RegisterUserModel model, BindingResult validator){
        if (validator.hasErrors()) {

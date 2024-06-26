@@ -5,6 +5,7 @@ import it.epicode.capstone.movie.MovieRepository;
 import it.epicode.capstone.security.SecurityUserDetails;
 import it.epicode.capstone.user.User;
 import it.epicode.capstone.user.UserRepository;
+import it.epicode.capstone.user.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -25,24 +26,20 @@ public class ReviewService {
     @Autowired
     private MovieRepository movieRepository;
 
+    @Autowired
+    private UserService userService;
+
     public Optional<ReviewResponse> findById(Long id) {
         return reviewRepository.findById(id).map(this::convertToResponse);
     }
 
-    private Long getCurrentUserId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof SecurityUserDetails) {
-            SecurityUserDetails userDetails = (SecurityUserDetails) authentication.getPrincipal();
-            return userDetails.getUserId();
-        }
-        throw new IllegalStateException("Utente non autenticato");
-    }
+
 
     public ReviewResponse save(ReviewRequest request) {
         Review review = new Review();
         BeanUtils.copyProperties(request, review);
 
-        User user = userRepository.findById(this.getCurrentUserId())
+        User user = userRepository.findById(userService.getCurrentUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
         review.setUser(user);
 
