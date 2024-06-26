@@ -46,8 +46,6 @@ public class UserService {
     private final JwtUtils jwt;
     private final EmailService emailService;
 
-    @Value("${spring.servlet.multipart.max-file-size}")
-    private String maxFileSize;
 
     @Autowired
     private JwtUtils jwtUtils;

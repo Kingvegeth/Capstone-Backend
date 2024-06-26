@@ -21,6 +21,12 @@ public class Movie extends BaseEntity {
     private String title;
     private int year;
     private int duration;
+    private String description;
+
+    @Enumerated(EnumType.STRING)
+    private Genre genre;
+
+    private String posterImg;
 
     @JsonIgnore
     @ManyToMany

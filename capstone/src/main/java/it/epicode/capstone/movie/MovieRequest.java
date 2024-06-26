@@ -17,6 +17,9 @@ public class MovieRequest {
 
     private int year;
     private int duration;
+    private String description;
+    private Genre genre;
+    private String posterImg;
 
     private List<Long> castIds;
     private List<Long> directorIds;

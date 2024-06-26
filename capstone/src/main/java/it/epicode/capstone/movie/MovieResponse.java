@@ -21,6 +21,9 @@ public class MovieResponse {
 
     private int year;
     private int duration;
+    private String description;
+    private Genre genre;
+    private String posterImg;
 
     private List<Person> cast;
     private List<Person> directors;

@@ -1,9 +1,12 @@
 package it.epicode.capstone.movie;
 
+import it.epicode.capstone.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +44,14 @@ public class MovieController {
     public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/poster")
+    public Movie uploadAvatar(@RequestParam("poster") MultipartFile file, @PathVariable Long id) {
+        try {
+            return movieService.savePosterImg(id, file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

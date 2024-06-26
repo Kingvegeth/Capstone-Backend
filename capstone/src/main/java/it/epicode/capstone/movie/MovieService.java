@@ -1,12 +1,19 @@
 package it.epicode.capstone.movie;
 
+import com.cloudinary.Cloudinary;
+import com.cloudinary.utils.ObjectUtils;
+import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.people.Person;
 import it.epicode.capstone.company.Company;
 import it.epicode.capstone.people.PersonRepository;
 import it.epicode.capstone.company.CompanyRepository;
+import it.epicode.capstone.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -23,6 +30,10 @@ public class MovieService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Value("${CLOUDINARY_URL}")
+    private String cloudinaryUrl;
+
 
     public List<MovieResponse> findAll() {
         return movieRepository.findAll().stream().map(this::movieToResponse).collect(Collectors.toList());
@@ -43,6 +54,9 @@ public class MovieService {
             movie.setTitle(request.getTitle());
             movie.setYear(request.getYear());
             movie.setDuration(request.getDuration());
+            movie.setDescription(request.getDescription());
+            movie.setGenre(request.getGenre());
+            movie.setPosterImg(request.getPosterImg());
             movie.setCast(getPersonsByIds(request.getCastIds()));
             movie.setDirectors(getPersonsByIds(request.getDirectorIds()));
             movie.setScreenwriters(getPersonsByIds(request.getScreenwriterIds()));
@@ -62,6 +76,9 @@ public class MovieService {
         movie.setTitle(request.getTitle());
         movie.setYear(request.getYear());
         movie.setDuration(request.getDuration());
+        movie.setDescription(request.getDescription());
+        movie.setGenre(request.getGenre());
+        movie.setPosterImg(request.getPosterImg());
         movie.setCast(getPersonsByIds(Optional.ofNullable(request.getCastIds()).orElse(List.of())));
         movie.setDirectors(getPersonsByIds(Optional.ofNullable(request.getDirectorIds()).orElse(List.of())));
         movie.setScreenwriters(getPersonsByIds(Optional.ofNullable(request.getScreenwriterIds()).orElse(List.of())));
@@ -76,12 +93,23 @@ public class MovieService {
         response.setTitle(movie.getTitle());
         response.setYear(movie.getYear());
         response.setDuration(movie.getDuration());
+        response.setDescription(movie.getDescription());
+        response.setGenre(movie.getGenre());
+        response.setPosterImg(movie.getPosterImg());
         response.setCast(movie.getCast());
         response.setDirectors(movie.getDirectors());
         response.setScreenwriters(movie.getScreenwriters());
         response.setProducers(movie.getProducers());
         response.setDistributor(movie.getDistributor());
         return response;
+    }
+
+    public Movie savePosterImg(long id, MultipartFile file) throws IOException {
+        var movie = movieRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
+        Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
+        var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
+        movie.setPosterImg(url);
+        return movieRepository.save(movie);
     }
 
     private List<Person> getPersonsByIds(List<Long> ids) {
