@@ -2,11 +2,15 @@ package it.epicode.capstone.movie;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import it.epicode.capstone.company.CompanyResponse;
+import it.epicode.capstone.company.CompanyService;
 import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.people.Person;
 import it.epicode.capstone.company.Company;
 import it.epicode.capstone.people.PersonRepository;
 import it.epicode.capstone.company.CompanyRepository;
+import it.epicode.capstone.people.PersonResponse;
+import it.epicode.capstone.people.PersonService;
 import it.epicode.capstone.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -30,6 +35,12 @@ public class MovieService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private PersonService personService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Value("${CLOUDINARY_URL}")
     private String cloudinaryUrl;
@@ -96,13 +107,18 @@ public class MovieService {
         response.setDescription(movie.getDescription());
         response.setGenre(movie.getGenre());
         response.setPosterImg(movie.getPosterImg());
-        response.setCast(movie.getCast());
-        response.setDirectors(movie.getDirectors());
-        response.setScreenwriters(movie.getScreenwriters());
-        response.setProducers(movie.getProducers());
-        response.setDistributor(movie.getDistributor());
+        response.setCast(movie.getCast().stream().map(personService::personToResponse).collect(Collectors.toList()));
+        response.setDirectors(movie.getDirectors().stream().map(personService::personToResponse).collect(Collectors.toList()));
+        response.setScreenwriters(movie.getScreenwriters().stream().map(personService::personToResponse).collect(Collectors.toList()));
+        response.setProducers(movie.getProducers().stream()
+                .filter(Objects::nonNull)  // Filter out null companies
+                .map(companyService::companyToResponse)
+                .collect(Collectors.toList()));
+        response.setDistributor(companyService.companyToResponse(movie.getDistributor()));
         return response;
     }
+
+
 
     public Movie savePosterImg(long id, MultipartFile file) throws IOException {
         var movie = movieRepository.findById(id).orElseThrow(()-> new NotFoundException(id));

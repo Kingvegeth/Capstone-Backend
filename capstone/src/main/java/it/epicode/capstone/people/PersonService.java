@@ -49,7 +49,7 @@ public class PersonService {
         return person;
     }
 
-    private PersonResponse personToResponse(Person person) {
+    public PersonResponse personToResponse(Person person) {
         PersonResponse personResponseDto = new PersonResponse();
         personResponseDto.setId(person.getId());
         personResponseDto.setFirstName(person.getFirstName());

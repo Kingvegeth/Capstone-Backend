@@ -8,6 +8,7 @@ import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.security.*;
 
 import it.epicode.capstone.exceptions.InvalidLoginException;
+import it.epicode.capstone.security.config.RestTemplateConfig;
 import it.epicode.capstone.security.roles.Roles;
 import it.epicode.capstone.security.roles.RolesRepository;
 import jakarta.persistence.EntityExistsException;
@@ -63,8 +64,15 @@ public class UserService {
 
             SecurityUserDetails userPrincipal = (SecurityUserDetails) authentication.getPrincipal();
 
+            String token = jwtUtils.generateToken(authentication);
+
+            // Aggiorna il token JWT nell'interceptor
+            RestTemplateConfig.JwtInterceptor.setToken(token);
+
+
             LoginResponseDTO dto = LoginResponseDTO.builder()
                     .withUser(buildRegisteredUserDTO(userPrincipal))
+                    .withToken(token)
                     .build();
 
             dto.setToken(jwtUtils.generateToken(authentication));

@@ -45,7 +45,10 @@ public class CompanyService {
         return company;
     }
 
-    private CompanyResponse companyToResponse(Company company) {
+    public CompanyResponse companyToResponse(Company company) {
+        if (company == null) {
+            return null;
+        }
         CompanyResponse response = new CompanyResponse();
         response.setId(company.getId());
         response.setName(company.getName());

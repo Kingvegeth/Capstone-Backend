@@ -1,7 +1,9 @@
 package it.epicode.capstone.movie;
 
+import it.epicode.capstone.company.CompanyResponse;
 import it.epicode.capstone.people.Person;
 import it.epicode.capstone.company.Company;
+import it.epicode.capstone.people.PersonResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -25,9 +27,9 @@ public class MovieResponse {
     private Genre genre;
     private String posterImg;
 
-    private List<Person> cast;
-    private List<Person> directors;
-    private List<Person> screenwriters;
-    private List<Company> producers;
-    private Company distributor;
+    private List<PersonResponse> cast;
+    private List<PersonResponse> directors;
+    private List<PersonResponse> screenwriters;
+    private List<CompanyResponse> producers;
+    private CompanyResponse distributor;
 }

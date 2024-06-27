@@ -10,7 +10,6 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Set;
 import javax.validation.constraints.Size;
 
 @Entity
@@ -33,4 +32,6 @@ public class Person extends BaseEntity {
     @JsonIgnore
     @ManyToMany(mappedBy = "cast")
     private List<Movie> movies;
+
+
 }
