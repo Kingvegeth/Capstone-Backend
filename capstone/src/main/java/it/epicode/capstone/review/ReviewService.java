@@ -51,11 +51,24 @@ public class ReviewService {
         return convertToResponse(review);
     }
 
-    private ReviewResponse convertToResponse(Review review) {
+    public Review convertToEntity(ReviewResponse response) {
+        Review review = new Review();
+        BeanUtils.copyProperties(response, review);
+        return review;
+    }
+
+    public ReviewResponse convertToResponse(Review review) {
         ReviewResponse response = new ReviewResponse();
         BeanUtils.copyProperties(review, response);
         response.setUser(review.getUser());
-        response.setMovie(review.getMovie());
+
+        return response;
+    }
+
+    public ReviewResponseForMovie convertToResponseForMovie(Review review) {
+        ReviewResponseForMovie response = new ReviewResponseForMovie();
+        BeanUtils.copyProperties(review, response);
+        response.setUser(review.getUser());
         return response;
     }
 }

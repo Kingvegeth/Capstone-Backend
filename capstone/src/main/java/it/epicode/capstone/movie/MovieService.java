@@ -11,6 +11,8 @@ import it.epicode.capstone.people.PersonRepository;
 import it.epicode.capstone.company.CompanyRepository;
 import it.epicode.capstone.people.PersonResponse;
 import it.epicode.capstone.people.PersonService;
+import it.epicode.capstone.review.Review;
+import it.epicode.capstone.review.ReviewService;
 import it.epicode.capstone.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +43,9 @@ public class MovieService {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private ReviewService reviewService;
 
     @Value("${CLOUDINARY_URL}")
     private String cloudinaryUrl;
@@ -73,10 +78,12 @@ public class MovieService {
             movie.setScreenwriters(getPersonsByIds(request.getScreenwriterIds()));
             movie.setProducers(getCompaniesByIds(request.getProducerIds()));
             movie.setDistributor(getCompanyById(request.getDistributorId()));
+            movie.setReviews(getReviewsByIds(request.getReviewIds()));
             movieRepository.save(movie);
             return movieToResponse(movie);
         });
     }
+
 
     public void deleteMovie(Long id) {
         movieRepository.deleteById(id);
@@ -95,6 +102,7 @@ public class MovieService {
         movie.setScreenwriters(getPersonsByIds(Optional.ofNullable(request.getScreenwriterIds()).orElse(List.of())));
         movie.setProducers(getCompaniesByIds(Optional.ofNullable(request.getProducerIds()).orElse(List.of())));
         movie.setDistributor(getCompanyById(request.getDistributorId()));
+        movie.setReviews(getReviewsByIds(Optional.ofNullable(request.getReviewIds()).orElse(List.of())));
         return movie;
     }
 
@@ -115,6 +123,9 @@ public class MovieService {
                 .map(companyService::companyToResponse)
                 .collect(Collectors.toList()));
         response.setDistributor(companyService.companyToResponse(movie.getDistributor()));
+        response.setReviews(movie.getReviews().stream()
+                .map(reviewService::convertToResponseForMovie)
+                .collect(Collectors.toList()));
         return response;
     }
 
@@ -137,6 +148,13 @@ public class MovieService {
     private List<Company> getCompaniesByIds(List<Long> ids) {
         return ids.stream().map(id -> companyRepository.findById(id)
                         .orElseThrow(() -> new NoSuchElementException("Company not found with id: " + id)))
+                .collect(Collectors.toList());
+    }
+
+    private List<Review> getReviewsByIds(List<Long> ids) {
+        return ids.stream().map(id -> reviewService.findById(id)
+                        .map(reviewService::convertToEntity)
+                        .orElseThrow(() -> new NoSuchElementException("Review not found with id: " + id)))
                 .collect(Collectors.toList());
     }
 

@@ -75,6 +75,12 @@ public class UserController {
         return new ResponseEntity<>(user.login(model.username(), model.password()).orElseThrow(), HttpStatus.OK);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logoutCurrentUser() {
+        user.logoutCurrentUser();
+        return ResponseEntity.ok().build();
+    }
+
     @PostMapping("/registerAdmin")
     public ResponseEntity<RegisteredUserDTO> registerAdmin(@RequestBody RegisterUserDTO registerUser){
         return ResponseEntity.ok(user.registerAdmin(registerUser));

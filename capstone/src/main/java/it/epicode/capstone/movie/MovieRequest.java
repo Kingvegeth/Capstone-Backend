@@ -1,5 +1,6 @@
 package it.epicode.capstone.movie;
 
+import it.epicode.capstone.review.Review;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -21,6 +22,8 @@ public class MovieRequest {
     private Genre genre;
     private String posterImg;
 
+
+    private List<Long> reviewIds;
     private List<Long> castIds;
     private List<Long> directorIds;
     private List<Long> screenwriterIds;

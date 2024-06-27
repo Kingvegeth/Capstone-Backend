@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.epicode.capstone.BaseEntity;
 import it.epicode.capstone.people.Person;
 import it.epicode.capstone.company.Company;
+import it.epicode.capstone.review.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -72,4 +73,8 @@ public class Movie extends BaseEntity {
     @JoinColumn(name = "distributor_id")
     private Company distributor;
 
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "movie")
+    List<Review> reviews;
 }

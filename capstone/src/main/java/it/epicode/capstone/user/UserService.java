@@ -47,6 +47,8 @@ public class UserService {
     private final JwtUtils jwt;
     private final EmailService emailService;
 
+    @Autowired
+    private TokenService tokenService;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -89,6 +91,16 @@ public class UserService {
 
     }
 
+    public void logoutCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getCredentials() instanceof String) {
+            String token = (String) authentication.getCredentials();
+            tokenService.blacklistToken(token);
+            SecurityContextHolder.clearContext();
+        } else {
+            throw new IllegalStateException("Utente non autenticato o token non valido");
+        }
+    }
 
 
 

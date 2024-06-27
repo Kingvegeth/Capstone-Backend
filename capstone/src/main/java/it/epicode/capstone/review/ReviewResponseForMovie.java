@@ -1,20 +1,14 @@
 package it.epicode.capstone.review;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import it.epicode.capstone.movie.Movie;
 import it.epicode.capstone.user.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ReviewResponse {
-
+public class ReviewResponseForMovie {
     private Long id;
     private String title;
     private String body;
     private User user;
-
-    private Movie movie;
-
 }
