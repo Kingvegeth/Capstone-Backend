@@ -51,6 +51,7 @@ public class SecurityUserDetails implements UserDetails {
                 .withRoles(user.getRoles())
                 .withFirstName(user.getFirstName())
                 .withLastName(user.getLastName())
+                .withEnabled(user.isActive())
                 .build();
     }
 }

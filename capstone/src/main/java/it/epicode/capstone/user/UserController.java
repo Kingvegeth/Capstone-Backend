@@ -67,6 +67,16 @@ public class UserController {
         return  new ResponseEntity<> (registeredUser, HttpStatus.OK);
     }
 
+    @GetMapping("/activate")
+    public ResponseEntity<String> activateUser(@RequestParam String token) {
+        boolean isActivated = user.activateUser(token);
+        if (isActivated) {
+            return ResponseEntity.ok("Account attivato con successo!");
+        } else {
+            return ResponseEntity.status(400).body("Token di attivazione non valido!");
+        }
+    }
+
     @PostMapping("login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody @Validated LoginModel model, BindingResult validator) {
         if (validator.hasErrors()) {

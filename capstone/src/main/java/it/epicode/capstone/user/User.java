@@ -47,4 +47,8 @@ public class User extends BaseEntity {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Favorite> favorites;
 
+    private boolean active= false;
+
+    private String activationToken;
+
 }

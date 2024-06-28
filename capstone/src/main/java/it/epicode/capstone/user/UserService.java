@@ -13,6 +13,7 @@ import it.epicode.capstone.security.roles.Roles;
 import it.epicode.capstone.security.roles.RolesRepository;
 import jakarta.persistence.EntityExistsException;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -33,6 +34,7 @@ import java.util.List;
 
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -52,6 +54,9 @@ public class UserService {
 
     @Autowired
     private JwtUtils jwtUtils;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Value("${CLOUDINARY_URL}")
     private String cloudinaryUrl;
@@ -125,14 +130,33 @@ public class UserService {
         BeanUtils.copyProperties(register, u);
         u.setPassword(encoder.encode(register.getPassword()));
         u.getRoles().add(roles);
+
+        String activationToken = UUID.randomUUID().toString();
+        u.setActivationToken(activationToken);
+        u.setActive(false);
+
+
         usersRepository.save(u);
         RegisteredUserDTO response = new RegisteredUserDTO();
         BeanUtils.copyProperties(u, response);
         response.setRoles(List.of(roles));
-        emailService.sendWelcomeEmail(u.getEmail());
+
+        emailService.sendActivationEmail(u.getEmail(), activationToken);
 
         return response;
 
+    }
+
+    public boolean activateUser(String token) {
+        Optional<User> userOpt = userRepository.findByActivationToken(token);
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+            user.setActive(true);
+            user.setActivationToken(null);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
     public RegisteredUserDTO registerAdmin(RegisterUserDTO register){
