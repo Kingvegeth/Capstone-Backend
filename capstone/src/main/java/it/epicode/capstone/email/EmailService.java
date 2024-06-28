@@ -2,11 +2,13 @@ package it.epicode.capstone.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public class EmailService {
 
@@ -14,8 +16,8 @@ public class EmailService {
     private JavaMailSender emailSender;
 
     public void sendActivationEmail(String recipientEmail, String activationToken) {
+        log.info("Preparing to send email to: {}", recipientEmail);
         MimeMessage message = emailSender.createMimeMessage();
-
 
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
@@ -48,8 +50,11 @@ public class EmailService {
             helper.setSubject("Benvenuto in Cult Cinema Hub! Attiva il tuo account");
             helper.setText(htmlContent, true); // Secondo parametro 'true' per indicare che il contenuto è HTML
 
+            log.info("Sending email to: {}", recipientEmail);
             emailSender.send(message);
+            log.info("Email sent successfully to: {}", recipientEmail);
         } catch (MessagingException e) {
+            log.error("Error sending email: {}", e.getMessage());
             e.printStackTrace();
         }
     }
