@@ -82,6 +82,11 @@ public class ReviewService {
         return reviews.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
 
+    public List<ReviewResponse> findAllReviewsByUserId(Long userId) {
+        return reviewRepository.findAllByUserId(userId).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
 
     public Review convertToEntity(ReviewResponse response) {
         Review review = new Review();

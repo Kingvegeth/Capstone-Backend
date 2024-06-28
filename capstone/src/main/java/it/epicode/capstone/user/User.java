@@ -2,6 +2,7 @@ package it.epicode.capstone.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.epicode.capstone.BaseEntity;
+import it.epicode.capstone.favorite.Favorite;
 import it.epicode.capstone.review.Review;
 import it.epicode.capstone.security.roles.Roles;
 import jakarta.persistence.*;
@@ -41,5 +42,9 @@ public class User extends BaseEntity {
     @JsonIgnore
     @OneToMany(mappedBy = "user")
     List<Review> reviews;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Favorite> favorites;
 
 }

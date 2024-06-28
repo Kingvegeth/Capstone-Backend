@@ -53,4 +53,10 @@ public class CommentController {
         List<CommentResponse> comments = commentService.findAllByParentCommentId(parentCommentId);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<CommentResponse>> getCommentsByUserId(@PathVariable Long userId) {
+        List<CommentResponse> comments = commentService.findAllCommentsByUserId(userId);
+        return new ResponseEntity<>(comments, HttpStatus.OK);
+    }
 }

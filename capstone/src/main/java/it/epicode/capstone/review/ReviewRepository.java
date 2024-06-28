@@ -2,5 +2,8 @@ package it.epicode.capstone.review;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ReviewRepository extends JpaRepository<Review,Long> {
+import java.util.List;
+
+public interface ReviewRepository extends JpaRepository<Review, Long> {
+    List<Review> findAllByUserId(Long userId);
 }

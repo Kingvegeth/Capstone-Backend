@@ -106,7 +106,7 @@ public class MovieService {
         return movie;
     }
 
-    private MovieResponse movieToResponse(Movie movie) {
+    public MovieResponse movieToResponse(Movie movie) {
         MovieResponse response = new MovieResponse();
         response.setId(movie.getId());
         response.setTitle(movie.getTitle());

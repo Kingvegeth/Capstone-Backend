@@ -76,6 +76,12 @@ public class CommentService {
         return commentRepository.findById(id).map(this::convertToResponse);
     }
 
+    public List<CommentResponse> findAllCommentsByUserId(Long userId) {
+        return commentRepository.findAllByUserId(userId).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
     private CommentResponse convertToResponse(Comment comment) {
         CommentResponse response = new CommentResponse();
         BeanUtils.copyProperties(comment, response);

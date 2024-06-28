@@ -30,6 +30,12 @@ public class ReviewController {
         return new ResponseEntity<>(reviews, HttpStatus.OK);
     }
 
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<ReviewResponse>> getReviewsByUserId(@PathVariable Long userId) {
+        List<ReviewResponse> reviews = reviewService.findAllReviewsByUserId(userId);
+        return new ResponseEntity<>(reviews, HttpStatus.OK);
+    }
+
     @PostMapping
     public ResponseEntity<ReviewResponse> createReview(@RequestBody ReviewRequest request, BindingResult validator) {
         if (validator.hasErrors()) {
