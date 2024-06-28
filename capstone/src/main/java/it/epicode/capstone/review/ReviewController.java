@@ -45,12 +45,11 @@ public class ReviewController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PatchMapping
-    public ResponseEntity<ReviewResponse> updateReview(@RequestBody @Validated ReviewRequest request, BindingResult validator) {
-        if (validator.hasErrors()) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        ReviewResponse response = reviewService.updateReview(request);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ReviewResponse> patchReview(@PathVariable Long id, @RequestBody ReviewRequest request) {
+        request.setId(id);
+        ReviewResponse updatedReview = reviewService.updateReview(request);
+        return ResponseEntity.ok(updatedReview);
     }
 }

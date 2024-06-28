@@ -67,9 +67,16 @@ public class ReviewService {
             throw new SecurityException("You are not authorized to update this review");
         }
 
-        review.setTitle(request.getTitle());
-        review.setBody(request.getBody());
-        review.setRating(request.getRating());
+        // Update fields only if they are provided in the request
+        if (request.getTitle() != null) {
+            review.setTitle(request.getTitle());
+        }
+        if (request.getBody() != null) {
+            review.setBody(request.getBody());
+        }
+        if (request.getRating() != null) {
+            review.setRating(request.getRating());
+        }
 
         reviewRepository.save(review);
         return convertToResponse(review);

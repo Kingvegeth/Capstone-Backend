@@ -20,7 +20,7 @@ public class ReviewRequest {
     private Long userId;
     @Min(1)
     @Max(10)
-    private int rating;
+    private Integer rating;
     private Long movieId;
 
 }

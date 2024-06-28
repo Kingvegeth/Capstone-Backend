@@ -73,12 +73,70 @@ public class MovieService {
             movie.setDescription(request.getDescription());
             movie.setGenre(request.getGenre());
             movie.setPosterImg(request.getPosterImg());
-            movie.setCast(getPersonsByIds(request.getCastIds()));
-            movie.setDirectors(getPersonsByIds(request.getDirectorIds()));
-            movie.setScreenwriters(getPersonsByIds(request.getScreenwriterIds()));
-            movie.setProducers(getCompaniesByIds(request.getProducerIds()));
-            movie.setDistributor(getCompanyById(request.getDistributorId()));
-            movie.setReviews(getReviewsByIds(request.getReviewIds()));
+
+            // Controlla se gli elenchi sono null e imposta i campi solo se non sono nulli
+            if (request.getCastIds() != null) {
+                movie.setCast(getPersonsByIds(request.getCastIds()));
+            }
+            if (request.getDirectorIds() != null) {
+                movie.setDirectors(getPersonsByIds(request.getDirectorIds()));
+            }
+            if (request.getScreenwriterIds() != null) {
+                movie.setScreenwriters(getPersonsByIds(request.getScreenwriterIds()));
+            }
+            if (request.getProducerIds() != null) {
+                movie.setProducers(getCompaniesByIds(request.getProducerIds()));
+            }
+            if (request.getDistributorId() != null) {
+                movie.setDistributor(getCompanyById(request.getDistributorId()));
+            }
+            if (request.getReviewIds() != null) {
+                movie.setReviews(getReviewsByIds(request.getReviewIds()));
+            }
+
+            movieRepository.save(movie);
+            return movieToResponse(movie);
+        });
+    }
+
+    public Optional<MovieResponse> patchMovie(Long id, MovieRequest request) {
+        return movieRepository.findById(id).map(movie -> {
+            if (request.getTitle() != null) {
+                movie.setTitle(request.getTitle());
+            }
+            if (request.getYear() != 0) {
+                movie.setYear(request.getYear());
+            }
+            if (request.getDuration() != 0) {
+                movie.setDuration(request.getDuration());
+            }
+            if (request.getDescription() != null) {
+                movie.setDescription(request.getDescription());
+            }
+            if (request.getGenre() != null) {
+                movie.setGenre(request.getGenre());
+            }
+            if (request.getPosterImg() != null) {
+                movie.setPosterImg(request.getPosterImg());
+            }
+            if (request.getCastIds() != null) {
+                movie.setCast(getPersonsByIds(request.getCastIds()));
+            }
+            if (request.getDirectorIds() != null) {
+                movie.setDirectors(getPersonsByIds(request.getDirectorIds()));
+            }
+            if (request.getScreenwriterIds() != null) {
+                movie.setScreenwriters(getPersonsByIds(request.getScreenwriterIds()));
+            }
+            if (request.getProducerIds() != null) {
+                movie.setProducers(getCompaniesByIds(request.getProducerIds()));
+            }
+            if (request.getDistributorId() != null) {
+                movie.setDistributor(getCompanyById(request.getDistributorId()));
+            }
+            if (request.getReviewIds() != null) {
+                movie.setReviews(getReviewsByIds(request.getReviewIds()));
+            }
             movieRepository.save(movie);
             return movieToResponse(movie);
         });

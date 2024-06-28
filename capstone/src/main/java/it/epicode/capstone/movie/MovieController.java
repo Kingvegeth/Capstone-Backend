@@ -40,6 +40,12 @@ public class MovieController {
         return updatedMovie.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @PatchMapping("/{id}")
+    public ResponseEntity<MovieResponse> patchMovie(@PathVariable Long id, @RequestBody MovieRequest request) {
+        Optional<MovieResponse> patchedMovie = movieService.patchMovie(id, request);
+        return patchedMovie.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
         movieService.deleteMovie(id);
