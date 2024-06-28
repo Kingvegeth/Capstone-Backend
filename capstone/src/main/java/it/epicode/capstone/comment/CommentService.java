@@ -1,0 +1,114 @@
+package it.epicode.capstone.comment;
+
+import it.epicode.capstone.review.ReviewRepository;
+import it.epicode.capstone.security.RegisteredUserDTO;
+import it.epicode.capstone.user.UserRepository;
+import it.epicode.capstone.user.UserService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Service
+public class CommentService {
+
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private UserService userService;
+
+    public CommentResponse save(CommentRequest request) {
+        Comment comment = new Comment();
+        BeanUtils.copyProperties(request, comment);
+
+        var user = userRepository.findById(userService.getCurrentUserId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+        comment.setUser(user);
+
+        if (request.getReviewId() != null) {
+            var review = reviewRepository.findById(request.getReviewId())
+                    .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+            comment.setReview(review);
+            comment.setReplyToComment(false);
+        }
+
+        if (request.getParentCommentId() != null) {
+            var parentComment = commentRepository.findById(request.getParentCommentId())
+                    .orElseThrow(() -> new IllegalArgumentException("Parent comment not found"));
+            comment.setParentComment(parentComment);
+            comment.setReplyToComment(true);
+        }
+
+        commentRepository.save(comment);
+        return convertToResponse(comment);
+    }
+
+    public CommentResponse updateComment(CommentRequest request) {
+        Comment comment = commentRepository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Comment not found"));
+
+        Long currentUserId = userService.getCurrentUserId();
+
+        if (!comment.getUser().getId().equals(currentUserId)) {
+            throw new SecurityException("You are not authorized to update this comment");
+        }
+
+        comment.setBody(request.getBody());
+        comment.setUpdatedAt(LocalDateTime.now());
+
+        commentRepository.save(comment);
+        return convertToResponse(comment);
+    }
+
+
+    public Optional<CommentResponse> findById(Long id) {
+        return commentRepository.findById(id).map(this::convertToResponse);
+    }
+
+    private CommentResponse convertToResponse(Comment comment) {
+        CommentResponse response = new CommentResponse();
+        BeanUtils.copyProperties(comment, response);
+        response.setUser(new RegisteredUserDTO(
+                comment.getUser().getId(),
+                comment.getUser().getFirstName(),
+                comment.getUser().getLastName(),
+                comment.getUser().getUsername(),
+                comment.getUser().getEmail(),
+                comment.getUser().getRoles()
+        ));
+        response.setReplies(comment.getReplies().stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList()));
+
+        response.setReviewId(comment.getReview() != null ? comment.getReview().getId() : null);
+        response.setReplyToComment(comment.isReplyToComment());
+        response.setCreatedAt(comment.getCreatedAt());
+        response.setUpdatedAt(comment.getUpdatedAt());
+        return response;
+    }
+
+    public List<CommentResponse> findAllByReviewId(Long reviewId) {
+        return commentRepository.findAll().stream()
+                .filter(comment -> comment.getReview() != null && comment.getReview().getId().equals(reviewId))
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<CommentResponse> findAllByParentCommentId(Long parentCommentId) {
+        return commentRepository.findAll().stream()
+                .filter(comment -> comment.getParentComment() != null && comment.getParentComment().getId().equals(parentCommentId))
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+}

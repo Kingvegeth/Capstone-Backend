@@ -188,7 +188,7 @@ public class UserService {
     }
 
 
-    private RegisteredUserDTO convertToResponse(User user) {
+    public RegisteredUserDTO convertToResponse(User user) {
         RegisteredUserDTO dto = RegisteredUserDTO.builder()
                 .withId(user.getId())
                 .withFirstName(user.getFirstName())
