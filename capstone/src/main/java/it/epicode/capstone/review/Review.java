@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import it.epicode.capstone.BaseEntity;
 import it.epicode.capstone.movie.Movie;
 import it.epicode.capstone.user.User;
-import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
 import lombok.*;
+
+import javax.validation.constraints.Min;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Entity
 @Table(name = "reviews")
@@ -30,4 +32,16 @@ public class Review extends BaseEntity {
     @ManyToOne
     @JsonIgnore
     private Movie movie;
+
+    @Min(1)
+    @Max(10)
+    private int rating;
+
+    private LocalDateTime updatedAt;
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
 }

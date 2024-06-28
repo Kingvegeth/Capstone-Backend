@@ -7,6 +7,7 @@ import it.epicode.capstone.security.RegisteredUserDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,8 +17,10 @@ public class ReviewResponse {
     private Long id;
     private String title;
     private String body;
+    private int rating;
     private RegisteredUserDTO user;
-
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private Movie movie;
     private List<CommentResponse> comments;
 }

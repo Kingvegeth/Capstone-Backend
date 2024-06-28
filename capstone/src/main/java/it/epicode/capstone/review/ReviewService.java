@@ -14,7 +14,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -56,6 +58,31 @@ public class ReviewService {
         return convertToResponse(review);
     }
 
+    public ReviewResponse updateReview(ReviewRequest request) {
+        Review review = reviewRepository.findById(request.getId())
+                .orElseThrow(() -> new IllegalArgumentException("Review not found"));
+
+        Long currentUserId = userService.getCurrentUserId();
+        if (!review.getUser().getId().equals(currentUserId)) {
+            throw new SecurityException("You are not authorized to update this review");
+        }
+
+        review.setTitle(request.getTitle());
+        review.setBody(request.getBody());
+        review.setRating(request.getRating());
+
+        reviewRepository.save(review);
+        return convertToResponse(review);
+    }
+
+    public List<ReviewResponse> findAllByMovieId(Long movieId) {
+        List<Review> reviews = reviewRepository.findAll().stream()
+                .filter(review -> review.getMovie().getId().equals(movieId))
+                .collect(Collectors.toList());
+        return reviews.stream().map(this::convertToResponse).collect(Collectors.toList());
+    }
+
+
     public Review convertToEntity(ReviewResponse response) {
         Review review = new Review();
         BeanUtils.copyProperties(response, review);
@@ -74,6 +101,9 @@ public class ReviewService {
                 review.getUser().getRoles()
         ));
         response.setComments(commentService.findAllByReviewId(review.getId()));
+        response.setRating(review.getRating());
+        response.setCreatedAt(review.getCreatedAt());
+        response.setUpdatedAt(review.getUpdatedAt());
         return response;
     }
 
