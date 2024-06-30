@@ -34,7 +34,7 @@ public class User extends BaseEntity {
 
     @Column(length = 125, nullable = false)
     private String password;
-    private String avatar = "https://i.postimg.cc/fk49ZKjR/default-user.png";
+    private String avatar;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private final List<Roles> roles = new ArrayList<>();
@@ -50,5 +50,12 @@ public class User extends BaseEntity {
     private boolean active= false;
 
     private String activationToken;
+
+    @PrePersist
+    public void prePersist() {
+        if (this.avatar == null) {
+            this.avatar = "https://i.postimg.cc/fk49ZKjR/default-user.png";
+        }
+    }
 
 }

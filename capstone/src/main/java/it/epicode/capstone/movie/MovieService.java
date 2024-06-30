@@ -2,6 +2,8 @@ package it.epicode.capstone.movie;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import it.epicode.capstone.comment.Comment;
+import it.epicode.capstone.comment.CommentRepository;
 import it.epicode.capstone.company.CompanyResponse;
 import it.epicode.capstone.company.CompanyService;
 import it.epicode.capstone.exceptions.NotFoundException;
@@ -12,6 +14,7 @@ import it.epicode.capstone.company.CompanyRepository;
 import it.epicode.capstone.people.PersonResponse;
 import it.epicode.capstone.people.PersonService;
 import it.epicode.capstone.review.Review;
+import it.epicode.capstone.review.ReviewRepository;
 import it.epicode.capstone.review.ReviewService;
 import it.epicode.capstone.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +40,12 @@ public class MovieService {
 
     @Autowired
     private CompanyRepository companyRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private PersonService personService;
@@ -175,8 +184,21 @@ public class MovieService {
     }
 
 
-    public void deleteMovie(Long id) {
-        movieRepository.deleteById(id);
+    public void deleteMovie(Long movieId) {
+        // Trova tutte le recensioni del film
+        List<Review> reviews = reviewRepository.findAllByMovieId(movieId);
+
+        // Trova e cancella tutti i commenti delle recensioni del film
+        for (Review review : reviews) {
+            List<Comment> comments = commentRepository.findAllByReviewId(review.getId());
+            commentRepository.deleteAll(comments);
+        }
+
+        // Cancella tutte le recensioni del film
+        reviewRepository.deleteAll(reviews);
+
+        // Cancella il film
+        movieRepository.deleteById(movieId);
     }
 
     private Movie requestToMovie(MovieRequest request) {

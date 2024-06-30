@@ -6,6 +6,7 @@ import com.cloudinary.utils.ObjectUtils;
 import it.epicode.capstone.comment.Comment;
 import it.epicode.capstone.comment.CommentRepository;
 import it.epicode.capstone.email.EmailService;
+import it.epicode.capstone.exceptions.LastAdminDeletionException;
 import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.review.Review;
 import it.epicode.capstone.review.ReviewRepository;
@@ -71,7 +72,8 @@ public class UserService {
     @Value("${CLOUDINARY_URL}")
     private String cloudinaryUrl;
 
-
+    @Value("${default.avatar.url}")
+    private String defaultAvatarUrl;
 
 
     public Optional<LoginResponseDTO> login(String username, String password) {
@@ -133,10 +135,13 @@ public class UserService {
         u.setPassword(encoder.encode(register.getPassword()));
         u.getRoles().add(roles);
 
+        if (u.getAvatar() == null) {
+            u.setAvatar(defaultAvatarUrl);
+        }
+
         String activationToken = UUID.randomUUID().toString();
         u.setActivationToken(activationToken);
         u.setActive(false);
-
 
         usersRepository.save(u);
         RegisteredUserDTO response = new RegisteredUserDTO();
@@ -199,6 +204,10 @@ public class UserService {
         u.getRoles().add(roles);
         u.setActive(true);
         u.setActivationToken(null);
+
+        if (u.getAvatar() == null) {
+            u.setAvatar(defaultAvatarUrl);
+        }
 
         usersRepository.save(u);
 
@@ -276,6 +285,21 @@ public class UserService {
 
     public void deleteCurrentUser() {
         Long userId = getCurrentUserId();
+        User userToDelete = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException(userId));
+
+        // Controlla se l'utente da eliminare è admin
+        boolean isUserToDeleteAdmin = userToDelete.getRoles().stream()
+                .anyMatch(role -> role.getRoleType().equals("ADMIN"));
+
+        // Se l'utente da eliminare è un admin, controlla che non sia l'ultimo admin
+        if (isUserToDeleteAdmin) {
+            long adminCount = userRepository.countByRoles_RoleType("ADMIN");
+            if (adminCount <= 1) {
+                throw new LastAdminDeletionException("Cannot delete the last admin user.");
+            }
+        }
+
         removeUserReferences(userId);
         userRepository.deleteById(userId);
     }

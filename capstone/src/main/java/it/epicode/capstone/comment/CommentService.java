@@ -1,5 +1,6 @@
 package it.epicode.capstone.comment;
 
+import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.review.ReviewRepository;
 import it.epicode.capstone.security.RegisteredUserDTO;
 import it.epicode.capstone.user.User;
@@ -127,5 +128,34 @@ public class CommentService {
                 .filter(comment -> comment.getParentComment() != null && comment.getParentComment().getId().equals(parentCommentId))
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteComment(Long commentId) {
+        Long currentUserId = userService.getCurrentUserId();
+
+        // Trova il commento
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new NotFoundException(commentId, "Comment not found"));
+
+        // Verifica se l'utente corrente è l'autore del commento
+        if (!comment.getUser().getId().equals(currentUserId)) {
+            throw new SecurityException("You are not authorized to delete this comment");
+        }
+
+        // Cancella il commento e i suoi figli
+        deleteCommentRecursive(comment);
+    }
+
+    private void deleteCommentRecursive(Comment comment) {
+        // Trova tutti i commenti figli del commento
+        List<Comment> replies = commentRepository.findAllByParentCommentId(comment.getId());
+
+        // Cancella tutti i commenti figli
+        for (Comment reply : replies) {
+            deleteCommentRecursive(reply); // Ricorsione per cancellare i commenti figli dei figli
+        }
+
+        // Cancella il commento
+        commentRepository.deleteById(comment.getId());
     }
 }

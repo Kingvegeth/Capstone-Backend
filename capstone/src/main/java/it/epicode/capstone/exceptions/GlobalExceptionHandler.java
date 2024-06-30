@@ -43,6 +43,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(LastAdminDeletionException.class)
+    public ResponseEntity<Object> handleLastAdminDeletionException(LastAdminDeletionException ex, WebRequest request) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", ex.getMessage());
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(SecurityException.class)
     public ResponseEntity<Object> handleSecurityException(SecurityException ex, WebRequest request) {
         Map<String, Object> body = new HashMap<>();

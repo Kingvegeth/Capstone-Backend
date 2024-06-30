@@ -59,4 +59,11 @@ public class CommentController {
         List<CommentResponse> comments = commentService.findAllCommentsByUserId(userId);
         return new ResponseEntity<>(comments, HttpStatus.OK);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long id) {
+        commentService.deleteComment(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }

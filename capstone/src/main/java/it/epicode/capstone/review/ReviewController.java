@@ -52,4 +52,10 @@ public class ReviewController {
         ReviewResponse updatedReview = reviewService.updateReview(request);
         return ResponseEntity.ok(updatedReview);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+        reviewService.deleteReview(id);
+        return ResponseEntity.noContent().build();
+    }
 }

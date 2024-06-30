@@ -1,6 +1,9 @@
 package it.epicode.capstone.review;
 
+import it.epicode.capstone.comment.Comment;
+import it.epicode.capstone.comment.CommentRepository;
 import it.epicode.capstone.comment.CommentService;
+import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.movie.Movie;
 import it.epicode.capstone.movie.MovieRepository;
 import it.epicode.capstone.security.RegisteredUserDTO;
@@ -24,6 +27,9 @@ public class ReviewService {
 
     @Autowired
     private ReviewRepository reviewRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -141,4 +147,42 @@ public class ReviewService {
 
         return response;
     }
+
+    public void deleteReview(Long reviewId) {
+        Long currentUserId = userService.getCurrentUserId();
+
+        // Trova la recensione
+        Review review = reviewRepository.findById(reviewId)
+                .orElseThrow(() -> new NotFoundException(reviewId, "Review not found"));
+
+        // Verifica se l'utente corrente è l'autore della recensione
+        if (!review.getUser().getId().equals(currentUserId)) {
+            throw new SecurityException("You are not authorized to delete this review");
+        }
+
+        // Trova tutti i commenti della recensione
+        List<Comment> comments = commentRepository.findAllByReviewId(reviewId);
+
+        // Cancella tutti i commenti della recensione
+        for (Comment comment : comments) {
+            deleteCommentRecursive(comment);
+        }
+
+        // Cancella la recensione
+        reviewRepository.deleteById(reviewId);
+    }
+
+    private void deleteCommentRecursive(Comment comment) {
+        // Trova tutti i commenti figli del commento
+        List<Comment> replies = commentRepository.findAllByParentCommentId(comment.getId());
+
+        // Cancella tutti i commenti figli
+        for (Comment reply : replies) {
+            deleteCommentRecursive(reply); // Ricorsione per cancellare i commenti figli dei figli
+        }
+
+        // Cancella il commento
+        commentRepository.deleteById(comment.getId());
+    }
+
 }
