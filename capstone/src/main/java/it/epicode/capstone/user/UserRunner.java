@@ -26,32 +26,16 @@ public class UserRunner implements ApplicationRunner {
         if (userRepository.count() == 0) {
             List<RegisterUserDTO> users = Arrays.asList(
                     RegisterUserDTO.builder()
-                            .withFirstName("Mario")
-                            .withLastName("Rossi")
-                            .withUsername("mrossi")
-                            .withEmail("mrossi@example.com")
+                            .withFirstName("Simone")
+                            .withLastName("Nardo")
+                            .withUsername("admin")
+                            .withEmail("simone@nardo.com")
                             .withPassword("password123")
-                            .build(),
-                    RegisterUserDTO.builder()
-                            .withFirstName("Luigi")
-                            .withLastName("Verdi")
-                            .withUsername("lverdi")
-                            .withEmail("lverdi@example.com")
-                            .withPassword("password456")
-                            .build(),
-                    // Aggiungi altri utenti come necessario
-                    // Esempio:
-                    RegisterUserDTO.builder()
-                            .withFirstName("Giovanna")
-                            .withLastName("Bianchi")
-                            .withUsername("gbianchi")
-                            .withEmail("gbianchi@example.com")
-                            .withPassword("password789")
                             .build()
             );
 
-            users.forEach(userService::register);
-            System.out.println("--- Utenti registrati ---");
+            users.forEach(userService::registerAdmin);
+            System.out.println("--- Admin registrato ---");
         }
     }
 }

@@ -4,6 +4,7 @@ import it.epicode.capstone.comment.CommentResponse;
 import it.epicode.capstone.movie.Movie;
 import it.epicode.capstone.security.RegisteredUserDTO;
 
+import it.epicode.capstone.user.UserResponse;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,7 +19,7 @@ public class ReviewResponse {
     private String title;
     private String body;
     private int rating;
-    private RegisteredUserDTO user;
+    private UserResponse user;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Movie movie;

@@ -30,8 +30,8 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<RegisteredUserDTO>> getAllUsers() {
-        List<RegisteredUserDTO> allUsers = user.getAllUsers();
-        return new ResponseEntity<>(allUsers, HttpStatus.OK);
+        List<RegisteredUserDTO> users = user.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/{id}")
@@ -96,12 +96,13 @@ public class UserController {
         return ResponseEntity.ok(user.registerAdmin(registerUser));
     }
 
-    @PatchMapping("avatar")
-    public User uploadAvatar(@RequestParam("avatar") MultipartFile file) {
+    @PatchMapping("/avatar")
+    public ResponseEntity<RegisteredUserDTO> uploadAvatar(@RequestParam("avatar") MultipartFile file) {
         try {
-            return user.saveAvatar(file);
+            RegisteredUserDTO userDto = user.saveAvatar(file);
+            return ResponseEntity.ok(userDto);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

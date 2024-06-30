@@ -71,7 +71,7 @@ public class MovieService {
             movie.setYear(request.getYear());
             movie.setDuration(request.getDuration());
             movie.setDescription(request.getDescription());
-            movie.setGenre(request.getGenre());
+            movie.setGenres(request.getGenres());
             movie.setPosterImg(request.getPosterImg());
 
             // Controlla se gli elenchi sono null e imposta i campi solo se non sono nulli
@@ -113,8 +113,8 @@ public class MovieService {
             if (request.getDescription() != null) {
                 movie.setDescription(request.getDescription());
             }
-            if (request.getGenre() != null) {
-                movie.setGenre(request.getGenre());
+            if (request.getGenres() != null) {
+                movie.setGenres(request.getGenres());
             }
             if (request.getPosterImg() != null) {
                 movie.setPosterImg(request.getPosterImg());
@@ -153,7 +153,7 @@ public class MovieService {
         movie.setYear(request.getYear());
         movie.setDuration(request.getDuration());
         movie.setDescription(request.getDescription());
-        movie.setGenre(request.getGenre());
+        movie.setGenres(request.getGenres());
         movie.setPosterImg(request.getPosterImg());
         movie.setCast(getPersonsByIds(Optional.ofNullable(request.getCastIds()).orElse(List.of())));
         movie.setDirectors(getPersonsByIds(Optional.ofNullable(request.getDirectorIds()).orElse(List.of())));
@@ -171,7 +171,7 @@ public class MovieService {
         response.setYear(movie.getYear());
         response.setDuration(movie.getDuration());
         response.setDescription(movie.getDescription());
-        response.setGenre(movie.getGenre());
+        response.setGenres(movie.getGenres());
         response.setPosterImg(movie.getPosterImg());
         response.setCast(movie.getCast().stream().map(personService::personToResponse).collect(Collectors.toList()));
         response.setDirectors(movie.getDirectors().stream().map(personService::personToResponse).collect(Collectors.toList()));
@@ -184,17 +184,19 @@ public class MovieService {
         response.setReviews(movie.getReviews().stream()
                 .map(reviewService::convertToResponseForMovie)
                 .collect(Collectors.toList()));
+        response.setAverageRating(calculateAverageRating(movie.getReviews())); // Imposta la media delle recensioni
         return response;
     }
 
 
 
-    public Movie savePosterImg(long id, MultipartFile file) throws IOException {
+    public MovieResponse  savePosterImg(long id, MultipartFile file) throws IOException {
         var movie = movieRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
         Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
         var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
         movie.setPosterImg(url);
-        return movieRepository.save(movie);
+        movieRepository.save(movie);
+        return movieToResponse(movie);
     }
 
     private List<Person> getPersonsByIds(List<Long> ids) {
@@ -219,5 +221,13 @@ public class MovieService {
     private Company getCompanyById(Long id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Company not found with id: " + id));
+    }
+
+    private double calculateAverageRating(List<Review> reviews) {
+        if (reviews.isEmpty()) {
+            return 0.0;
+        }
+        double sum = reviews.stream().mapToInt(Review::getRating).sum();
+        return Math.round((sum / reviews.size()) * 10.0) / 10.0; // Arrotonda alla prima cifra decimale
     }
 }

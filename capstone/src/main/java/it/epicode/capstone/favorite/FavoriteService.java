@@ -50,12 +50,12 @@ public class FavoriteService {
         favoriteRepository.findByUserAndMovie(user, movie).ifPresent(favoriteRepository::delete);
     }
 
-    public List<Movie> getFavorites() {
+    public List<FavoriteResponse> getFavorites() {
         User user = userRepository.findById(userService.getCurrentUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
         return favoriteRepository.findAllByUser(user).stream()
-                .map(Favorite::getMovie)
+                .map(favorite -> new FavoriteResponse(favorite.getMovie().getId(), favorite.getMovie().getTitle()))
                 .collect(Collectors.toList());
     }
 }

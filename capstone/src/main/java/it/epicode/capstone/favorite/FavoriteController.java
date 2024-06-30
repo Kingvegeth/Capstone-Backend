@@ -33,10 +33,8 @@ public class FavoriteController {
     }
 
     @GetMapping
-    public ResponseEntity<List<MovieResponse>> getFavorites() {
-        List<MovieResponse> favorites = favoriteService.getFavorites().stream()
-                .map(movieService::movieToResponse)
-                .collect(Collectors.toList());
+    public ResponseEntity<List<FavoriteResponse>> getFavorites() {
+        List<FavoriteResponse> favorites = favoriteService.getFavorites();
         return new ResponseEntity<>(favorites, HttpStatus.OK);
     }
 }

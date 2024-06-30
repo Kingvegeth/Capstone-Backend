@@ -58,18 +58,19 @@ public class ApplicationSecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults()) // Utilizza la configurazione CORS
                 .authorizeHttpRequests(authorize ->
-                                authorize //CONFIGURAZIONE DELLA PROTEZIONE DEI VARI ENDPOINT
+                                authorize
                                         .requestMatchers("/api/users/login").permitAll()
                                         .requestMatchers("/api/users/register").permitAll()
-                                        .requestMatchers("/api/users/registerAdmin").permitAll() // DA CANCELLARE DOPO AVER CREATO L'ADMIN
+                                        .requestMatchers("/api/users/registerAdmin").hasAuthority("ADMIN")
                                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
+                                        .requestMatchers(HttpMethod.DELETE, "/api/favorites/**").authenticated()
                                         .requestMatchers("/api/users/activate").permitAll()
-                                        .requestMatchers(HttpMethod.GET, "/**").authenticated() //TUTTE GLI ENDPOINTS DI TIPO GET SONO RICHIAMABILI SOLO SE L'UTENTE E AUTENTICATO
-                                        .requestMatchers(HttpMethod.POST, "/**").authenticated() //TUTTE LE POST POSSONO ESSERE FATTE SOLO DALL'ADMIN
-                                        .requestMatchers(HttpMethod.PATCH, "/api/users/{id}").authenticated() //SOLO UN UTENTE AUTENTICATO PUO MODIFICARE I SUOI DATI
-                                        .requestMatchers(HttpMethod.PUT, "/**").authenticated() //TUTTE LE PUT POSSONO ESSERE FATTE SOLO DALL'ADMIN
-                                        .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN") //TUTTE LE DELETE POSSONO ESSERE FATTE SOLO DALL'ADMIN
-                        //.requestMatchers("/**").authenticated() //TUTTO CIO CHE PUO ESSERE SFUGGITO RICHIEDE L'AUTENTICAZIONE (SERVE A GESTIRE EVENTUALI DIMENTICANZE)
+                                        .requestMatchers(HttpMethod.GET, "/**").authenticated()
+                                        .requestMatchers(HttpMethod.POST, "/**").authenticated()
+                                        .requestMatchers(HttpMethod.PATCH, "/api/users/{id}").authenticated()
+                                        .requestMatchers(HttpMethod.PUT, "/**").authenticated()
+                                        .requestMatchers(HttpMethod.DELETE, "/**").hasAuthority("ADMIN")
+                                        .requestMatchers("/**").authenticated()
                 )
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

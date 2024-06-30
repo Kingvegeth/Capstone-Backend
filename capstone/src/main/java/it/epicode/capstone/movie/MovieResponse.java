@@ -27,7 +27,7 @@ public class MovieResponse {
     private int year;
     private int duration;
     private String description;
-    private Genre genre;
+    private List<Genre> genres;
     private String posterImg;
 
 
@@ -37,4 +37,6 @@ public class MovieResponse {
     private List<PersonResponse> screenwriters;
     private List<CompanyResponse> producers;
     private CompanyResponse distributor;
+
+    private double averageRating;
 }

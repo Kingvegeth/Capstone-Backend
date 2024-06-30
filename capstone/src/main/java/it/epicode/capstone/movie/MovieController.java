@@ -53,9 +53,10 @@ public class MovieController {
     }
 
     @PatchMapping("/{id}/poster")
-    public Movie uploadAvatar(@RequestParam("poster") MultipartFile file, @PathVariable Long id) {
+    public ResponseEntity<MovieResponse> uploadPoster(@RequestParam("poster") MultipartFile file, @PathVariable Long id) {
         try {
-            return movieService.savePosterImg(id, file);
+            MovieResponse movieResponse = movieService.savePosterImg(id, file);
+            return ResponseEntity.ok(movieResponse);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

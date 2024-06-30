@@ -25,8 +25,11 @@ public class Movie extends BaseEntity {
     private int duration;
     private String description;
 
+    @ElementCollection(targetClass = Genre.class)
     @Enumerated(EnumType.STRING)
-    private Genre genre;
+    @CollectionTable(name = "movie_genres")
+    @Column(name = "genre")
+    private List<Genre> genres;
 
     private String posterImg;
 

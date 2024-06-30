@@ -19,7 +19,7 @@ public class MovieRequest {
     private int year;
     private int duration;
     private String description;
-    private Genre genre;
+    private List<Genre> genres;
     private String posterImg;
 
 

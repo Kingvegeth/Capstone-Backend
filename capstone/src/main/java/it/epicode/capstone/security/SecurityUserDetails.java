@@ -10,6 +10,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serial;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -38,6 +39,8 @@ public class SecurityUserDetails implements UserDetails {
 
     private String firstName;
     private String lastName;
+    private String avatar;
+    private LocalDateTime createdAt;
 
     public static SecurityUserDetails build(User user) {
         var authorities = user.getRoles().stream()
@@ -51,6 +54,8 @@ public class SecurityUserDetails implements UserDetails {
                 .withRoles(user.getRoles())
                 .withFirstName(user.getFirstName())
                 .withLastName(user.getLastName())
+                .withAvatar(user.getAvatar())
+                .withCreatedAt(user.getCreatedAt())
                 .withEnabled(user.isActive())
                 .build();
     }

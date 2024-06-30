@@ -163,10 +163,15 @@ public class UserService {
         BeanUtils.copyProperties(register, u);
         u.setPassword(encoder.encode(register.getPassword()));
         u.getRoles().add(roles);
+        u.setActive(true);
+        u.setActivationToken(null);
+
         usersRepository.save(u);
+
         RegisteredUserDTO response = new RegisteredUserDTO();
         BeanUtils.copyProperties(u, response);
         response.setRoles(List.of(roles));
+
         return response;
 
     }
@@ -176,18 +181,9 @@ public class UserService {
 
     public List<RegisteredUserDTO> getAllUsers() {
         List<User> users = usersRepository.findAll();
-        return users.stream().map(user -> {
-            RegisteredUserDTO dto = RegisteredUserDTO.builder()
-                    .withId(user.getId())
-                    .withFirstName(user.getFirstName())
-                    .withLastName(user.getLastName())
-                    .withUsername(user.getUsername())
-                    .withEmail(user.getEmail())
-                    .withRoles(user.getRoles())
-                    .build();
-            return dto;
-        }).collect(Collectors.toList());
+        return users.stream().map(this::convertToResponse).collect(Collectors.toList());
     }
+
 
 
     public Optional<RegisteredUserDTO> getUserById(Long id) {
@@ -211,6 +207,8 @@ public class UserService {
                 .withLastName(user.getLastName())
                 .withUsername(user.getUsername())
                 .withEmail(user.getEmail())
+                .withAvatar(user.getAvatar())
+                .withCreatedAt(user.getCreatedAt())
                 .withRoles(user.getRoles())
                 .build();
         return dto;
@@ -224,19 +222,22 @@ public class UserService {
         userDto.setUsername(userDetails.getUsername());
         userDto.setFirstName(userDetails.getFirstName());
         userDto.setLastName(userDetails.getLastName());
+        userDto.setAvatar(userDetails.getAvatar());
+        userDto.setCreatedAt(userDetails.getCreatedAt());
 
         return userDto;
 
     }
 
 
-    public User saveAvatar(MultipartFile file) throws IOException {
+    public RegisteredUserDTO saveAvatar(MultipartFile file) throws IOException {
         var id = this.getCurrentUserId();
-        var user = usersRepository.findById(id).orElseThrow(()-> new NotFoundException(id));
+        var user = usersRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
         Cloudinary cloudinary = new Cloudinary(cloudinaryUrl);
         var url = (String) cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap()).get("url");
         user.setAvatar(url);
-        return usersRepository.save(user);
+        usersRepository.save(user);
+        return convertToResponse(user);
     }
 }
 

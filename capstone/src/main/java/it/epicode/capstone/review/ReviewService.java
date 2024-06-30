@@ -7,6 +7,7 @@ import it.epicode.capstone.security.RegisteredUserDTO;
 import it.epicode.capstone.security.SecurityUserDetails;
 import it.epicode.capstone.user.User;
 import it.epicode.capstone.user.UserRepository;
+import it.epicode.capstone.user.UserResponse;
 import it.epicode.capstone.user.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,14 +105,7 @@ public class ReviewService {
     private ReviewResponse convertToResponse(Review review) {
         ReviewResponse response = new ReviewResponse();
         BeanUtils.copyProperties(review, response);
-        response.setUser(new RegisteredUserDTO(
-                review.getUser().getId(),
-                review.getUser().getFirstName(),
-                review.getUser().getLastName(),
-                review.getUser().getUsername(),
-                review.getUser().getEmail(),
-                review.getUser().getRoles()
-        ));
+        response.setUser(convertToUserResponse(review.getUser())); // Converti User in UserResponse
         response.setComments(commentService.findAllByReviewId(review.getId()));
         response.setRating(review.getRating());
         response.setCreatedAt(review.getCreatedAt());
@@ -119,10 +113,19 @@ public class ReviewService {
         return response;
     }
 
+    private UserResponse convertToUserResponse(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUsername(user.getUsername());
+        userResponse.setAvatar(user.getAvatar());
+        userResponse.setCreatedAt(user.getCreatedAt());
+        return userResponse;
+    }
+
     public ReviewResponseForMovie convertToResponseForMovie(Review review) {
         ReviewResponseForMovie response = new ReviewResponseForMovie();
         BeanUtils.copyProperties(review, response);
-        response.setUser(review.getUser());
+        response.setUser(convertToUserResponse(review.getUser())); // Converti User in UserResponse
         return response;
     }
 }

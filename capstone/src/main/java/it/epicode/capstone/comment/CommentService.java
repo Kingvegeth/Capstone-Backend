@@ -2,7 +2,9 @@ package it.epicode.capstone.comment;
 
 import it.epicode.capstone.review.ReviewRepository;
 import it.epicode.capstone.security.RegisteredUserDTO;
+import it.epicode.capstone.user.User;
 import it.epicode.capstone.user.UserRepository;
+import it.epicode.capstone.user.UserResponse;
 import it.epicode.capstone.user.UserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,23 +87,26 @@ public class CommentService {
     private CommentResponse convertToResponse(Comment comment) {
         CommentResponse response = new CommentResponse();
         BeanUtils.copyProperties(comment, response);
-        response.setUser(new RegisteredUserDTO(
-                comment.getUser().getId(),
-                comment.getUser().getFirstName(),
-                comment.getUser().getLastName(),
-                comment.getUser().getUsername(),
-                comment.getUser().getEmail(),
-                comment.getUser().getRoles()
-        ));
+        response.setUser(convertToUserResponse(comment.getUser())); // Converti User in UserResponse
         response.setReplies(comment.getReplies().stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList()));
 
         response.setReviewId(comment.getReview() != null ? comment.getReview().getId() : null);
+        response.setParentId(comment.getParentComment() != null ? comment.getParentComment().getId() : null);
         response.setReplyToComment(comment.isReplyToComment());
         response.setCreatedAt(comment.getCreatedAt());
         response.setUpdatedAt(comment.getUpdatedAt());
         return response;
+    }
+
+    private UserResponse convertToUserResponse(User user) {
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setUsername(user.getUsername());
+        userResponse.setAvatar(user.getAvatar());
+        userResponse.setCreatedAt(user.getCreatedAt());
+        return userResponse;
     }
 
     public List<CommentResponse> findAllByReviewId(Long reviewId) {
