@@ -1,5 +1,8 @@
 package it.epicode.capstone.people;
 
+import it.epicode.capstone.movie.MovieResponse;
+import it.epicode.capstone.movie.MovieService;
+import it.epicode.capstone.movie.MovieSimpleResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +16,9 @@ public class PersonController {
 
     @Autowired
     private PersonService personService;
+
+    @Autowired
+    private MovieService movieService;
 
     @GetMapping
     public List<PersonResponse> getAllPeople() {
@@ -42,4 +48,24 @@ public class PersonController {
         personService.deletePerson(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/{id}/movies/cast")
+    public ResponseEntity<List<MovieSimpleResponse>> getMoviesAsCast(@PathVariable Long id) {
+        List<MovieSimpleResponse> movies = movieService.findMoviesByCastId(id);
+        return ResponseEntity.ok(movies);
+    }
+
+    @GetMapping("/{id}/movies/director")
+    public ResponseEntity<List<MovieSimpleResponse>> getMoviesAsDirector(@PathVariable Long id) {
+        List<MovieSimpleResponse> movies = movieService.findMoviesByDirectorId(id);
+        return ResponseEntity.ok(movies);
+    }
+
+    @GetMapping("/{id}/movies/screenwriter")
+    public ResponseEntity<List<MovieSimpleResponse>> getMoviesAsScreenwriter(@PathVariable Long id) {
+        List<MovieSimpleResponse> movies = movieService.findMoviesByScreenwriterId(id);
+        return ResponseEntity.ok(movies);
+    }
 }
+

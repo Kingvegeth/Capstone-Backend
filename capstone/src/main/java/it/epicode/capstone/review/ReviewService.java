@@ -105,13 +105,20 @@ public class ReviewService {
     private ReviewResponse convertToResponse(Review review) {
         ReviewResponse response = new ReviewResponse();
         BeanUtils.copyProperties(review, response);
-        response.setUser(convertToUserResponse(review.getUser())); // Converti User in UserResponse
+
+        if (review.getUser() != null) {
+            response.setUser(convertToUserResponse(review.getUser())); // Convert User to UserResponse
+        } else {
+            response.setUserStatus("Utente eliminato");
+        }
+
         response.setComments(commentService.findAllByReviewId(review.getId()));
         response.setRating(review.getRating());
         response.setCreatedAt(review.getCreatedAt());
         response.setUpdatedAt(review.getUpdatedAt());
         return response;
     }
+
 
     private UserResponse convertToUserResponse(User user) {
         UserResponse userResponse = new UserResponse();
@@ -125,7 +132,13 @@ public class ReviewService {
     public ReviewResponseForMovie convertToResponseForMovie(Review review) {
         ReviewResponseForMovie response = new ReviewResponseForMovie();
         BeanUtils.copyProperties(review, response);
-        response.setUser(convertToUserResponse(review.getUser())); // Converti User in UserResponse
+
+        if (review.getUser() != null) {
+            response.setUser(convertToUserResponse(review.getUser())); // Convert User to UserResponse
+        } else {
+            response.setUserStatus("Utente eliminato");
+        }
+
         return response;
     }
 }

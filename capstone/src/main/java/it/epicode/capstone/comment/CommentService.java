@@ -87,7 +87,13 @@ public class CommentService {
     private CommentResponse convertToResponse(Comment comment) {
         CommentResponse response = new CommentResponse();
         BeanUtils.copyProperties(comment, response);
-        response.setUser(convertToUserResponse(comment.getUser())); // Converti User in UserResponse
+
+        if (comment.getUser() != null) {
+            response.setUser(convertToUserResponse(comment.getUser())); // Convert User to UserResponse
+        } else {
+            response.setUserStatus("Utente eliminato");
+        }
+
         response.setReplies(comment.getReplies().stream()
                 .map(this::convertToResponse)
                 .collect(Collectors.toList()));

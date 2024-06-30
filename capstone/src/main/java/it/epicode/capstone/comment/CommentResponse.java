@@ -19,6 +19,7 @@ public class CommentResponse {
     private String body;
     private boolean isReplyToComment;
     private UserResponse user;
+    private String userStatus;
     private List<CommentResponse> replies;
     private Long reviewId;
     private Long parentId;

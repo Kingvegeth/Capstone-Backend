@@ -59,6 +59,38 @@ public class MovieService {
         return movieRepository.findById(id).map(this::movieToResponse);
     }
 
+    public List<MovieSimpleResponse> findMoviesByCastId(Long id) {
+        Person person = personRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Person not found"));
+        List<Movie> movies = movieRepository.findByCastContains(person);
+        return movies.stream().map(this::movieToSimpleResponse).collect(Collectors.toList());
+    }
+
+    public List<MovieSimpleResponse> findMoviesByDirectorId(Long id) {
+        Person person = personRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Person not found"));
+        List<Movie> movies = movieRepository.findByDirectorsContains(person);
+        return movies.stream().map(this::movieToSimpleResponse).collect(Collectors.toList());
+    }
+
+    public List<MovieSimpleResponse> findMoviesByScreenwriterId(Long id) {
+        Person person = personRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Person not found"));
+        List<Movie> movies = movieRepository.findByScreenwritersContains(person);
+        return movies.stream().map(this::movieToSimpleResponse).collect(Collectors.toList());
+    }
+
+    public List<MovieSimpleResponse> findMoviesByProducerId(Long id) {
+        Company company = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Company not found"));
+        List<Movie> movies = movieRepository.findByProducersContains(company);
+        return movies.stream().map(this::movieToSimpleResponse).collect(Collectors.toList());
+    }
+
+    public List<MovieSimpleResponse> findMoviesByDistributorId(Long id) {
+        Company company = companyRepository.findById(id).orElseThrow(() -> new NoSuchElementException("Company not found"));
+        List<Movie> movies = movieRepository.findByDistributor(company);
+        return movies.stream().map(this::movieToSimpleResponse).collect(Collectors.toList());
+    }
+
+
+
     public MovieResponse createMovie(MovieRequest request) {
         Movie movie = requestToMovie(request);
         movieRepository.save(movie);
@@ -221,6 +253,18 @@ public class MovieService {
     private Company getCompanyById(Long id) {
         return companyRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("Company not found with id: " + id));
+    }
+
+    public MovieSimpleResponse movieToSimpleResponse(Movie movie) {
+        MovieSimpleResponse response = new MovieSimpleResponse();
+        response.setId(movie.getId());
+        response.setTitle(movie.getTitle());
+        response.setYear(movie.getYear());
+        response.setDuration(movie.getDuration());
+        response.setDescription(movie.getDescription());
+        response.setPosterImg(movie.getPosterImg());
+        response.setAverageRating(calculateAverageRating(movie.getReviews())); // Imposta la media delle recensioni
+        return response;
     }
 
     private double calculateAverageRating(List<Review> reviews) {

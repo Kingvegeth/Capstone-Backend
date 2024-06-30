@@ -64,6 +64,7 @@ public class ApplicationSecurityConfig {
                                         .requestMatchers("/api/users/registerAdmin").hasAuthority("ADMIN")
                                         .requestMatchers(HttpMethod.PATCH, "/**").authenticated()
                                         .requestMatchers(HttpMethod.DELETE, "/api/favorites/**").authenticated()
+                                        .requestMatchers(HttpMethod.DELETE, "/api/users/delete").authenticated()
                                         .requestMatchers("/api/users/activate").permitAll()
                                         .requestMatchers(HttpMethod.GET, "/**").authenticated()
                                         .requestMatchers(HttpMethod.POST, "/**").authenticated()

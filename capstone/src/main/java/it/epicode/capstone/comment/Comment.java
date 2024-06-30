@@ -47,4 +47,18 @@ public class Comment extends BaseEntity {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
+
+    public void removeUser() {
+        this.user = null;
+    }
+
+    @Transient
+    public String getUserStatus() {
+        return (user == null) ? "Utente eliminato" : user.getUsername();
+    }
+
+    @Transient
+    public Long getUserId() {
+        return (user == null) ? null : user.getId();
+    }
 }

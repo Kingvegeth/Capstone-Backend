@@ -28,4 +28,15 @@ public class ApplicationUserDetailsService implements UserDetailsService {
         return SecurityUserDetails.build(user);
     }
 
+    public UserDetails loadUserById(Long id) throws UsernameNotFoundException {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with ID: " + id));
+
+        if (!user.isActive()) {
+            throw new DisabledException("User is not activated");
+        }
+
+        return SecurityUserDetails.build(user);
+    }
+
 }

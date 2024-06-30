@@ -15,7 +15,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
-    public void sendActivationEmail(String recipientEmail, String activationToken) {
+    public void sendActivationEmail(String recipientEmail, String firstName, String activationToken) {
         log.info("Preparing to send email to: {}", recipientEmail);
         MimeMessage message = emailSender.createMimeMessage();
 
@@ -28,7 +28,7 @@ public class EmailService {
                     "<body style='font-family: Arial, sans-serif; text-align: center; color: #333;'>" +
                     "<div style='max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px;'>" +
                     "<img src='https://via.placeholder.com/100' alt='Logo' style='width: 100px; height: 100px; margin-bottom: 20px;'>" +
-                    "<h1 style='color: #555;'>Benvenuto su Cult Cinema Hub!</h1>" +
+                    "<h1 style='color: #555;'>Benvenuto su Cult Cinema Hub, " + firstName + "!</h1>" +
                     "<p style='font-size: 16px; color: #666;'>Il tuo account è quasi pronto.</p>" +
                     "<a href='" + activationLink + "' style='display: inline-block; margin: 20px auto; padding: 10px 20px; color: #fff; background-color: #007bff; border-radius: 5px; text-decoration: none;'>Attiva il tuo account</a>" +
                     "<p style='font-size: 14px; color: #999;'>Puoi anche copiare e incollare il seguente link nel tuo browser:</p>" +

@@ -34,7 +34,7 @@ public class User extends BaseEntity {
 
     @Column(length = 125, nullable = false)
     private String password;
-    private String avatar;
+    private String avatar = "https://i.postimg.cc/fk49ZKjR/default-user.png";
 
     @ManyToMany(fetch = FetchType.EAGER)
     private final List<Roles> roles = new ArrayList<>();

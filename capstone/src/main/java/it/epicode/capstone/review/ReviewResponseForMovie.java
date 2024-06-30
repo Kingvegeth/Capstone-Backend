@@ -12,4 +12,5 @@ public class ReviewResponseForMovie {
     private String title;
     private String body;
     private UserResponse user;
+    private String userStatus;
 }

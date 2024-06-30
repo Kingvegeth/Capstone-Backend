@@ -1,9 +1,15 @@
 package it.epicode.capstone.company;
 
+import it.epicode.capstone.movie.Movie;
+import it.epicode.capstone.movie.MovieRepository;
+import it.epicode.capstone.movie.MovieService;
+import it.epicode.capstone.movie.MovieSimpleResponse;
+import it.epicode.capstone.review.Review;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -13,6 +19,11 @@ public class CompanyService {
     @Autowired
     private CompanyRepository companyRepository;
 
+    @Autowired
+    private MovieRepository movieRepository;
+
+
+
     public List<CompanyResponse> findAll() {
         return companyRepository.findAll().stream().map(this::companyToResponse).collect(Collectors.toList());
     }
@@ -20,6 +31,10 @@ public class CompanyService {
     public Optional<CompanyResponse> findById(Long id) {
         return companyRepository.findById(id).map(this::companyToResponse);
     }
+
+
+
+
 
     public CompanyResponse createCompany(CompanyRequest request) {
         Company company = requestToCompany(request);

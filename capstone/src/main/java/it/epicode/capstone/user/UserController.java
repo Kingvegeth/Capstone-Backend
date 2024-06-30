@@ -96,6 +96,12 @@ public class UserController {
         return ResponseEntity.ok(user.registerAdmin(registerUser));
     }
 
+    @PatchMapping("edit")
+    public ResponseEntity<RegisteredUserDTO> updateUser(@RequestBody UpdateUserRequest updateUserRequest) {
+        RegisteredUserDTO updatedUser = user.updateUser(updateUserRequest);
+        return ResponseEntity.ok(updatedUser);
+    }
+
     @PatchMapping("/avatar")
     public ResponseEntity<RegisteredUserDTO> uploadAvatar(@RequestParam("avatar") MultipartFile file) {
         try {
@@ -107,6 +113,11 @@ public class UserController {
     }
 
 
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteCurrentUser() {
+        user.deleteCurrentUser();
+        return ResponseEntity.noContent().build();
+    }
 
 }
 

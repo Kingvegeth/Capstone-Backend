@@ -3,8 +3,12 @@ package it.epicode.capstone.user;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import it.epicode.capstone.comment.Comment;
+import it.epicode.capstone.comment.CommentRepository;
 import it.epicode.capstone.email.EmailService;
 import it.epicode.capstone.exceptions.NotFoundException;
+import it.epicode.capstone.review.Review;
+import it.epicode.capstone.review.ReviewRepository;
 import it.epicode.capstone.security.*;
 
 import it.epicode.capstone.exceptions.InvalidLoginException;
@@ -57,6 +61,12 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private ReviewRepository reviewRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Value("${CLOUDINARY_URL}")
     private String cloudinaryUrl;
@@ -133,10 +143,34 @@ public class UserService {
         BeanUtils.copyProperties(u, response);
         response.setRoles(List.of(roles));
 
-        emailService.sendActivationEmail(u.getEmail(), activationToken);
+        emailService.sendActivationEmail(u.getEmail(), u.getFirstName(), activationToken);
 
         return response;
 
+    }
+
+    public RegisteredUserDTO updateUser(UpdateUserRequest updateUserRequest) {
+        var id = this.getCurrentUserId();
+        User user = usersRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
+
+        if (updateUserRequest.getFirstName() != null) {
+            user.setFirstName(updateUserRequest.getFirstName());
+        }
+        if (updateUserRequest.getLastName() != null) {
+            user.setLastName(updateUserRequest.getLastName());
+        }
+        if (updateUserRequest.getUsername() != null) {
+            user.setUsername(updateUserRequest.getUsername());
+        }
+        if (updateUserRequest.getEmail() != null) {
+            user.setEmail(updateUserRequest.getEmail());
+        }
+        if (updateUserRequest.getPassword() != null) {
+            user.setPassword(encoder.encode(updateUserRequest.getPassword()));
+        }
+
+        usersRepository.save(user);
+        return convertToResponse(user);
     }
 
     public boolean activateUser(String token) {
@@ -238,6 +272,28 @@ public class UserService {
         user.setAvatar(url);
         usersRepository.save(user);
         return convertToResponse(user);
+    }
+
+    public void deleteCurrentUser() {
+        Long userId = getCurrentUserId();
+        removeUserReferences(userId);
+        userRepository.deleteById(userId);
+    }
+
+    private void removeUserReferences(Long userId) {
+        // Aggiorna le recensioni dell'utente
+        List<Review> reviews = reviewRepository.findByUserId(userId);
+        for (Review review : reviews) {
+            review.removeUser();
+        }
+        reviewRepository.saveAll(reviews);
+
+        // Aggiorna i commenti dell'utente
+        List<Comment> comments = commentRepository.findByUserId(userId);
+        for (Comment comment : comments) {
+            comment.removeUser();
+        }
+        commentRepository.saveAll(comments);
     }
 }
 

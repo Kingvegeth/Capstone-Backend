@@ -20,6 +20,7 @@ public class ReviewResponse {
     private String body;
     private int rating;
     private UserResponse user;
+    private String userStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private Movie movie;
