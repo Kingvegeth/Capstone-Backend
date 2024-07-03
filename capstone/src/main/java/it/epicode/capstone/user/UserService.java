@@ -120,7 +120,6 @@ public class UserService {
     }
 
 
-
     public RegisteredUserDTO register(RegisterUserDTO register){
         if(usersRepository.existsByUsername(register.getUsername())){
             throw new EntityExistsException("Username gia' esistente");
