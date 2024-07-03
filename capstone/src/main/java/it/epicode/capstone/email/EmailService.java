@@ -2,8 +2,10 @@ package it.epicode.capstone.email;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,9 @@ public class EmailService {
     @Autowired
     private JavaMailSender emailSender;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     public void sendActivationEmail(String recipientEmail, String firstName, String activationToken) {
         log.info("Preparing to send email to: {}", recipientEmail);
         MimeMessage message = emailSender.createMimeMessage();
@@ -22,7 +27,7 @@ public class EmailService {
         try {
             MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-            String activationLink = "http://localhost:8080/api/users/activate?token=" + activationToken;
+            String activationLink = baseUrl + "/api/users/activate?token=" + activationToken;
 
             String htmlContent = "<html>" +
                     "<body style='font-family: Arial, sans-serif; text-align: center; color: #333;'>" +
