@@ -1,7 +1,6 @@
 package it.epicode.capstone.exceptions;
 
 import jakarta.persistence.EntityExistsException;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -65,7 +63,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(EntityExistsException.class)
     public ResponseEntity<Object> handleEntityExistsException(EntityExistsException ex, WebRequest request) {
-        log.error("EntityExistsException: " + ex.getMessage()); // Log the error message
         Map<String, Object> body = new HashMap<>();
         body.put("message", ex.getMessage());
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
