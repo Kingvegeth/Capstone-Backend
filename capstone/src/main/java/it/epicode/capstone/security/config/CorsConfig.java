@@ -12,17 +12,16 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://localhost:4200"); // Aggiungi qui le origini consentite
-        configuration.addAllowedMethod(CorsConfiguration.ALL); // Permette tutti i metodi comuni, puoi specificare: GET, POST, PUT, DELETE, ecc.
-        configuration.addAllowedHeader(CorsConfiguration.ALL); // Permette tutti gli header
-        configuration.setAllowCredentials(true); // Permette le credenziali
+        configuration.addAllowedOrigin("http://localhost:4200");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.setAllowCredentials(true);
 
-        // Setta i permessi per le richieste preflight (OPTIONS)
-        configuration.addExposedHeader("Authorization"); // Espone l'header Authorization nelle risposte
-        configuration.setMaxAge(3600L); // Cache delle preflight per 1 ora
+        configuration.addExposedHeader("Authorization");
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration); // Applica questa configurazione CORS a tutte le route
+        source.registerCorsConfiguration("/**", configuration);
 
         return new CorsFilter(source);
     }
