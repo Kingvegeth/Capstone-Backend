@@ -44,13 +44,13 @@ public class CommentService {
                     .orElseThrow(() -> new IllegalArgumentException("Review not found"));
             comment.setReview(review);
             comment.setReplyToComment(false);
-        }
-
-        if (request.getParentCommentId() != null) {
+            comment.setParentComment(null);
+        } else if (request.getParentCommentId() != null) {
             var parentComment = commentRepository.findById(request.getParentCommentId())
                     .orElseThrow(() -> new IllegalArgumentException("Parent comment not found"));
             comment.setParentComment(parentComment);
             comment.setReplyToComment(true);
+            comment.setReview(parentComment.getReview());
         }
 
         commentRepository.save(comment);
