@@ -26,11 +26,12 @@ public class CommentController {
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    @PatchMapping
-    public ResponseEntity<CommentResponse> updateComment(@RequestBody @Validated CommentRequest request, BindingResult validator) {
+    @PutMapping("/{id}")
+    public ResponseEntity<CommentResponse> updateComment(@PathVariable Long id, @RequestBody @Validated CommentRequest request, BindingResult validator) {
         if (validator.hasErrors()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        request.setId(id);
         CommentResponse response = commentService.updateComment(request);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
