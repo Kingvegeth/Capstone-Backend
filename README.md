@@ -1,4 +1,3 @@
-Progetto
 Questo progetto è una piattaforma dedicata agli appassionati di cinema. Il blog presenta informazioni su una selezione di film aggionata costantemente, oltre a permettere agli utenti di scrivere recensioni e interagire tramite commenti.
 
 Tecnologie Utilizzate:
