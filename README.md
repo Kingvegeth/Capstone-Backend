@@ -8,4 +8,4 @@ Java con Spring Boot, PostgreSQL, Spring Security con JWT
 
 
 Ecco il link alla repository del frontend:
-https://github.com/Kingvegeth/Capstone-Frontend
+https://github.com/Kingvegeth/Capstone-Frontend.git
