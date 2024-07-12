@@ -32,6 +32,8 @@ public class CommentService {
     private UserService userService;
 
     public CommentResponse save(CommentRequest request) {
+        System.out.println("Received CommentRequest: " + request);
+
         Comment comment = new Comment();
         BeanUtils.copyProperties(request, comment);
 
@@ -43,14 +45,15 @@ public class CommentService {
             var review = reviewRepository.findById(request.getReviewId())
                     .orElseThrow(() -> new IllegalArgumentException("Review not found"));
             comment.setReview(review);
-            comment.setReplyToComment(false);
-            comment.setParentComment(null);
-        } else if (request.getParentCommentId() != null) {
+        }
+
+        if (request.getParentCommentId() != null) {
             var parentComment = commentRepository.findById(request.getParentCommentId())
                     .orElseThrow(() -> new IllegalArgumentException("Parent comment not found"));
             comment.setParentComment(parentComment);
             comment.setReplyToComment(true);
-            comment.setReview(parentComment.getReview());
+        } else {
+            comment.setReplyToComment(false);
         }
 
         commentRepository.save(comment);
@@ -90,7 +93,7 @@ public class CommentService {
         BeanUtils.copyProperties(comment, response);
 
         if (comment.getUser() != null) {
-            response.setUser(convertToUserResponse(comment.getUser())); // Convert User to UserResponse
+            response.setUser(convertToUserResponse(comment.getUser()));
         } else {
             response.setUserStatus("Utente eliminato");
         }
@@ -104,6 +107,9 @@ public class CommentService {
         response.setReplyToComment(comment.isReplyToComment());
         response.setCreatedAt(comment.getCreatedAt());
         response.setUpdatedAt(comment.getUpdatedAt());
+
+        System.out.println("CommentResponse: " + response); // Aggiungi questo log
+
         return response;
     }
 

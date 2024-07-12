@@ -2,6 +2,9 @@ package it.epicode.capstone.movie;
 
 import it.epicode.capstone.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,8 +21,13 @@ public class MovieController {
     private MovieService movieService;
 
     @GetMapping
-    public List<MovieResponse> getAllMovies() {
-        return movieService.findAll();
+    public Page<MovieResponse> getAllMovies(
+            @RequestParam Optional<Integer> page,
+            @RequestParam Optional<Integer> size) {
+        int currentPage = page.orElse(0);
+        int pageSize = size.orElse(10);
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        return movieService.findAll(pageable);
     }
 
     @GetMapping("/{id}")

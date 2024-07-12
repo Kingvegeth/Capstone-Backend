@@ -4,21 +4,23 @@ import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import it.epicode.capstone.comment.Comment;
 import it.epicode.capstone.comment.CommentRepository;
-import it.epicode.capstone.company.CompanyResponse;
+
 import it.epicode.capstone.company.CompanyService;
 import it.epicode.capstone.exceptions.NotFoundException;
 import it.epicode.capstone.people.Person;
 import it.epicode.capstone.company.Company;
 import it.epicode.capstone.people.PersonRepository;
 import it.epicode.capstone.company.CompanyRepository;
-import it.epicode.capstone.people.PersonResponse;
+
 import it.epicode.capstone.people.PersonService;
 import it.epicode.capstone.review.Review;
 import it.epicode.capstone.review.ReviewRepository;
 import it.epicode.capstone.review.ReviewService;
-import it.epicode.capstone.user.User;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -60,8 +62,8 @@ public class MovieService {
     private String cloudinaryUrl;
 
 
-    public List<MovieResponse> findAll() {
-        return movieRepository.findAll().stream().map(this::movieToResponse).collect(Collectors.toList());
+    public Page<MovieResponse> findAll(Pageable pageable) {
+        return movieRepository.findAll(pageable).map(this::movieToResponse);
     }
 
     public Optional<MovieResponse> findById(Long id) {
