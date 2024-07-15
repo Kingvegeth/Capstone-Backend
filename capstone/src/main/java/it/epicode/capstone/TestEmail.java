@@ -3,10 +3,14 @@ package it.epicode.capstone;
 import jakarta.mail.*;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
 public class TestEmail {
+    private static final Logger log = LoggerFactory.getLogger(TestEmail.class);
+
     public static void main(String[] args) {
         String host = "smtp.gmail.com";
         String port = "587";
@@ -37,6 +41,7 @@ public class TestEmail {
             System.out.println("Email sent successfully.");
         } catch (MessagingException e) {
             e.printStackTrace();
+            log.info("test");
         }
     }
 }
