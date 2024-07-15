@@ -23,11 +23,13 @@ public class MovieController {
     @GetMapping
     public Page<MovieResponse> getAllMovies(
             @RequestParam Optional<Integer> page,
-            @RequestParam Optional<Integer> size) {
+            @RequestParam Optional<Integer> size,
+            @RequestParam Optional<String> search) {
         int currentPage = page.orElse(0);
         int pageSize = size.orElse(10);
+        String searchQuery = search.orElse("");
         Pageable pageable = PageRequest.of(currentPage, pageSize);
-        return movieService.findAll(pageable);
+        return movieService.findAll(pageable, searchQuery);
     }
 
     @GetMapping("/{id}")

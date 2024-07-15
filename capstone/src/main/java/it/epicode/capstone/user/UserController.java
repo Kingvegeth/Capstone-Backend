@@ -4,16 +4,21 @@ import com.cloudinary.Cloudinary;
 import it.epicode.capstone.security.*;
 import it.epicode.capstone.exceptions.ApiValidationException;
 import jakarta.persistence.EntityExistsException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -71,14 +76,25 @@ public class UserController {
         }
     }
 
+//    @GetMapping("/activate")
+//    public ResponseEntity<String> activateUser(@RequestParam String token) {
+//        boolean isActivated = user.activateUser(token);
+//        if (isActivated) {
+//            return ResponseEntity.ok("Account attivato con successo!");
+//        } else {
+//            return ResponseEntity.status(400).body("Token di attivazione non valido!");
+//        }
+//    }
+
     @GetMapping("/activate")
-    public ResponseEntity<String> activateUser(@RequestParam String token) {
+    public ResponseEntity<Void> activateUser(@RequestParam String token, HttpServletResponse response) throws IOException {
         boolean isActivated = user.activateUser(token);
         if (isActivated) {
-            return ResponseEntity.ok("Account attivato con successo!");
+            response.sendRedirect("http://localhost:4200/activation-success");
         } else {
-            return ResponseEntity.status(400).body("Token di attivazione non valido!");
+            response.sendRedirect("http://localhost:4200/activation-error");
         }
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping("login")

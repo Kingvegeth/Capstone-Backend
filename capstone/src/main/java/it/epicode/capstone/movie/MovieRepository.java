@@ -17,4 +17,5 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     List<Movie> findByScreenwritersContains(Person person);
     List<Movie> findByProducersContains(Company company);
     List<Movie> findByDistributor(Company company);
+    Page<Movie> findByTitleContainingIgnoreCase(String title, Pageable pageable);
 }

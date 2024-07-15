@@ -62,8 +62,12 @@ public class MovieService {
     private String cloudinaryUrl;
 
 
-    public Page<MovieResponse> findAll(Pageable pageable) {
-        return movieRepository.findAll(pageable).map(this::movieToResponse);
+    public Page<MovieResponse> findAll(Pageable pageable, String searchQuery) {
+        if (searchQuery == null || searchQuery.isEmpty()) {
+            return movieRepository.findAll(pageable).map(this::movieToResponse);
+        } else {
+            return movieRepository.findByTitleContainingIgnoreCase(searchQuery, pageable).map(this::movieToResponse);
+        }
     }
 
     public Optional<MovieResponse> findById(Long id) {
