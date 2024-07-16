@@ -38,6 +38,12 @@ public class MovieController {
         return movie.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/top-rated")
+    public ResponseEntity<List<MovieResponse>> getTopRatedMovies(@RequestParam(defaultValue = "5") int limit) {
+        List<MovieResponse> topRatedMovies = movieService.getTopRatedMovies(limit);
+        return ResponseEntity.ok(topRatedMovies);
+    }
+
     @PostMapping
     public ResponseEntity<MovieResponse> createMovie(@RequestBody MovieRequest request) {
         MovieResponse response = movieService.createMovie(request);

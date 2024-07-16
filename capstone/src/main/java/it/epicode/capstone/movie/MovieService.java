@@ -19,6 +19,7 @@ import it.epicode.capstone.review.ReviewService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
@@ -104,7 +105,11 @@ public class MovieService {
         return movies.stream().map(this::movieToSimpleResponse).collect(Collectors.toList());
     }
 
-
+    public List<MovieResponse> getTopRatedMovies(int limit) {
+        var pageable = PageRequest.of(0, limit);
+        List<Movie> topRatedMovies = movieRepository.findTopRatedMovies(pageable);
+        return topRatedMovies.stream().map(this::movieToResponse).collect(Collectors.toList());
+    }
 
     public MovieResponse createMovie(MovieRequest request) {
         Movie movie = requestToMovie(request);
